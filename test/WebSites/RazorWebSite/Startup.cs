@@ -3,7 +3,6 @@
 
 using System.Globalization;
 using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Localization;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.Framework.DependencyInjection;
@@ -37,6 +36,8 @@ namespace RazorWebSite
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseRequestLocalization();
+
             app.UseRequestLocalization();
 
             // Add MVC to the request pipeline

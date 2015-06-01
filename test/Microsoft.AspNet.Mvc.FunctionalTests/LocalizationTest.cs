@@ -3,8 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using System.Resources;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using LocalizationWebSite;
 using Microsoft.AspNet.Builder;
 using Microsoft.Framework.DependencyInjection;
@@ -70,6 +73,92 @@ mypartial
 
             // Assert
             Assert.Equal(expected, body.Trim(), ignoreLineEndingDifferences: true);
+        }
+
+        public static IEnumerable<object[]> LocalizationResourceData
+        {
+            get
+            {
+                var expected1 =
+ @"My ASP.NET Application
+
+Hello there!!
+Learn More";
+
+                //yield return new[] {"en-GB", expected1 };
+
+                var expected2 =
+ @"Mon application ASP.NET
+
+Bonjour!
+apprendre Encore Plus";
+                yield return new[] { "fr", expected2 };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(LocalizationResourceData))]
+        public async Task Localization_Resources(string value, string expected)
+        {
+            // Arrange
+            var server = TestHelper.CreateServer(_app, SiteName, _configureServices);
+            var client = server.CreateClient();
+            var cultureCookie = "c=" + value + "|uic=" + value;
+            client.DefaultRequestHeaders.Add(
+                "Cookie",
+                new CookieHeaderValue("ASPNET_CULTURE", cultureCookie).ToString());
+
+            if (!value.StartsWith("en"))
+            {
+                // Manually generating .resources file since we don't autogenerate .resources file yet. 
+                WriteResourceFile("HomeController." + value + ".resx");
+                WriteResourceFile("Views.Home.Locpage.cshtml." + value + ".resx");
+                WriteResourceFile("Views.Shared._LocalizationLayout.cshtml." + value + ".resx");
+            }
+
+            System.Diagnostics.Debugger.Launch();
+            // Act
+            var body = await client.GetStringAsync("http://localhost/Home/Locpage");
+
+            // Assert
+            Assert.Equal(expected, body.Trim());
+        }
+
+        private void WriteResourceFile(string resxFileName)
+        {
+            var resxFilePath = Directory.GetParent(Directory.GetCurrentDirectory()) + "\\WebSites\\" + SiteName + 
+                "\\Resources\\" + resxFileName;
+
+            using (var fs = File.OpenRead(resxFilePath))
+            {
+                var document = XDocument.Load(fs);
+
+                var binDirPath = Path.Combine(Path.GetDirectoryName(resxFilePath), "bin");
+                if (!Directory.Exists(binDirPath))
+                {
+                    Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(resxFilePath), "bin"));
+                }
+
+                // Put in "bin" sub-folder of resx file
+                var targetPath = Path.Combine(
+                    binDirPath,
+                    Path.ChangeExtension(Path.GetFileName(resxFilePath), ".resources"));
+
+                using (var targetStream = File.Create(targetPath))
+                {
+                    var rw = new ResourceWriter(targetStream);
+
+                    foreach (var e in document.Root.Elements("data"))
+                    {
+                        var name = e.Attribute("name").Value;
+                        var value = e.Element("value").Value;
+
+                        rw.AddResource(name, value);
+                    }
+
+                    rw.Generate();
+                }
+            }
         }
     }
 }
