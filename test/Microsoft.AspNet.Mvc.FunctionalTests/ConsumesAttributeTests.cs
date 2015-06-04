@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ActionConstraintsWebSite;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing;
 using Microsoft.Framework.DependencyInjection;
 using Newtonsoft.Json;
 using Xunit;
@@ -57,8 +58,12 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
             Assert.Equal(typeof(AmbiguousActionException).FullName, exception.ExceptionType);
             Assert.Equal(
-                "Multiple actions matched. The following actions matched route data and had all constraints "+
-                "satisfied:____ActionConstraintsWebSite.ConsumesAttribute_NoFallBackActionController."+
+                TestPlatformHelper.IsMono ?
+                "Multiple actions matched. The following actions matched route data and had all constraints " +
+                "satisfied:__ActionConstraintsWebSite.ConsumesAttribute_NoFallBackActionController." +
+                "CreateProduct_ActionConstraintsWebSite.ConsumesAttribute_NoFallBackActionController.CreateProduct" :
+                "Multiple actions matched. The following actions matched route data and had all constraints " +
+                "satisfied:____ActionConstraintsWebSite.ConsumesAttribute_NoFallBackActionController." +
                 "CreateProduct__ActionConstraintsWebSite.ConsumesAttribute_NoFallBackActionController.CreateProduct",
                 exception.ExceptionMessage);
         }

@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.Mvc.WebApiCompatShim;
+using Microsoft.AspNet.Testing;
 using Microsoft.Framework.OptionsModel;
 #if !DNXCORE50
 using Moq;
@@ -20,12 +21,15 @@ namespace System.Net.Http
         [Fact]
         public void CreateResponse_MatchingMediaType_WhenMediaTypeStringIsInvalidFormat_Throws()
         {
+            var expected = TestPlatformHelper.IsMono ?
+                "One of the identified items was in an invalid format." :
+                "The format of value 'foo/bar; param=value' is invalid.";
             HttpRequestMessage request = CreateRequest(new DefaultHttpContext());
 
             var ex = Assert.Throws<FormatException>(
                 () => request.CreateResponse(HttpStatusCode.OK, CreateValue(), "foo/bar; param=value"));
 
-            Assert.Equal("The format of value 'foo/bar; param=value' is invalid.", ex.Message);
+            Assert.Equal(expected, ex.Message);
         }
 
         [Fact]

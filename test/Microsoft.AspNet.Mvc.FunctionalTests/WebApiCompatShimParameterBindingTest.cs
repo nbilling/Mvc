@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Newtonsoft.Json;
 using Xunit;
@@ -106,7 +107,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal("5", content);
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // https://github.com/aspnet/Mvc/issues/2670
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("http://localhost/api/Blog/Employees/PostByIdFromQuery/5", "-1")]
         [InlineData("http://localhost/api/Blog/Employees/PostByIdFromQuery?id=5", "5")]
         public async Task ApiController_SimpleParameter_FromQuery_ReadsFromQueryNotRouteData(string url, string expected)
@@ -126,7 +129,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal(expected, content);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // https://github.com/aspnet/Mvc/issues/2670
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ApiController_SimpleParameter_FromQuery_DoesNotReadFormData()
         {
             // Arrange

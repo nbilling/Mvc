@@ -1403,29 +1403,11 @@ namespace Microsoft.AspNet.Mvc.Rendering
                     },
                     {
                         typeof(EnumWithDuplicates),
-                        new List<SelectListItem>
-                        {
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.Zero), Value = "0" },
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.None), Value = "0" },
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.One), Value = "1" },
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.Duece), Value = "2" },
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.Two), Value = "2" },
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.MoreThanTwo), Value = "3" },
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.Three), Value = "3" },
-                        }
+                        GetValuesListUptoThree()
                     },
                     {
                         typeof(EnumWithDuplicates?),
-                        new List<SelectListItem>
-                        {
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.Zero), Value = "0" },
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.None), Value = "0" },
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.One), Value = "1" },
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.Duece), Value = "2" },
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.Two), Value = "2" },
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.MoreThanTwo), Value = "3" },
-                            new SelectListItem { Text = nameof(EnumWithDuplicates.Three), Value = "3" },
-                        }
+                        GetValuesListUptoThree()
                     },
                     {
                         typeof(EnumWithFields),
@@ -1531,6 +1513,36 @@ namespace Microsoft.AspNet.Mvc.Rendering
                 Assert.False(actualItem.Selected);
                 Assert.Equal(expectedItem.Text, actualItem.Text);
                 Assert.Equal(expectedItem.Value, actualItem.Value);
+            }
+        }
+
+        private static List<SelectListItem> GetValuesListUptoThree()
+        {
+            if (TestPlatformHelper.IsMono)
+            {
+                return new List<SelectListItem>
+                {
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.Zero), Value = "0" },
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.None), Value = "0" },
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.One), Value = "1" },
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.Two), Value = "2" },
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.Duece), Value = "2" },
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.Three), Value = "3" },
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.MoreThanTwo), Value = "3" },
+                };
+            }
+            else
+            {
+                return new List<SelectListItem>
+                {
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.Zero), Value = "0" },
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.None), Value = "0" },
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.One), Value = "1" },
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.Two), Value = "2" },
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.Duece), Value = "2" },
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.MoreThanTwo), Value = "3" },
+                    new SelectListItem { Text = nameof(EnumWithDuplicates.Three), Value = "3" },
+                };
             }
         }
 

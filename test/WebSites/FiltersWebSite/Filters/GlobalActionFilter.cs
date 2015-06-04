@@ -10,7 +10,7 @@ namespace FiltersWebSite
     {
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            if (context.ActionDescriptor.DisplayName == "FiltersWebSite.ActionFilterController.GetHelloWorld")
+            if (context.ActionDescriptor.DisplayName == "FiltersWebSite.SampleActionFilterController.GetHelloWorld")
             {
                 context.Result = Helpers.GetContentResult(context.Result, "GlobalActionFilter.OnActionExecuted");
             }
@@ -24,7 +24,7 @@ namespace FiltersWebSite
 
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            if (context.ActionDescriptor.DisplayName == "FiltersWebSite.ActionFilterController.GetHelloWorld")
+            if (context.ActionDescriptor.DisplayName == "FiltersWebSite.SampleActionFilterController.GetHelloWorld")
             {
                 (context.ActionArguments["fromGlobalActionFilter"] as List<ContentResult>)
                     .Add(Helpers.GetContentResult(null, "GlobalActionFilter.OnActionExecuting"));

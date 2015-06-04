@@ -372,8 +372,8 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             var client = server.CreateClient();
 
             // Act
-            var response = await client.GetAsync("http://localhost/ActionFilter/GetHelloWorld");
-
+            var response = await client.GetAsync("http://localhost/SampleActionFilter/GetHelloWorld");
+            
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal(
@@ -547,7 +547,7 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             var client = server.CreateClient();
 
             // Act
-            var response = await client.GetAsync("http://localhost/Home/ThrowingActionFilter");
+            var response = await client.GetAsync("http://localhost/Home/ActionFilterThrows");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

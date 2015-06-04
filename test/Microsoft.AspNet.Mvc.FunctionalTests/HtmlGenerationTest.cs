@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using HtmlGenerationWebSite;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Mvc.TagHelpers;
+using Microsoft.AspNet.Testing;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.WebEncoders;
 using Xunit;
@@ -59,6 +61,11 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             var client = server.CreateClient();
             var expectedMediaType = MediaTypeHeaderValue.Parse("text/html; charset=utf-8");
             var outputFile = "compiler/resources/HtmlGenerationWebSite.HtmlGeneration_Home." + action + ".html";
+            if (TestPlatformHelper.IsMono && (action == "Link" || action == "Script"))
+            {
+                outputFile = "compiler/resources/MvcTagHelpersWebSite.MvcTagHelper_Home." + action + ".Mono.html";
+            }
+
             var expectedContent =
                 await ResourceFile.ReadResourceAsync(_resourcesAssembly, outputFile, sourceFile: false);
 
@@ -115,6 +122,10 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             var client = server.CreateClient();
             var expectedMediaType = MediaTypeHeaderValue.Parse("text/html; charset=utf-8");
             var outputFile = "compiler/resources/HtmlGenerationWebSite.HtmlGeneration_Home." + action + ".Encoded.html";
+            if (TestPlatformHelper.IsMono && (action == "Link" || action == "Script"))
+            {
+                outputFile = "compiler/resources/MvcTagHelpersWebSite.MvcTagHelper_Home." + action + ".Encoded.Mono.html";
+            }
             var expectedContent =
                 await ResourceFile.ReadResourceAsync(_resourcesAssembly, outputFile, sourceFile: false);
 
@@ -259,7 +270,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
 #endif
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CacheTagHelper_ExpiresContent_BasedOnExpiresParameter()
         {
             // Arrange
@@ -283,7 +296,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal(expected2, response2.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CacheTagHelper_UsesVaryByCookie_ToVaryContent()
         {
             // Arrange
@@ -371,7 +386,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal(expected4, response4.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CacheTagHelper_VariesByUserId()
         {
             // Arrange
@@ -398,7 +415,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal(expected2, response4.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task CacheTagHelper_BubblesExpirationOfNestedTagHelpers()
         {
             // Arrange

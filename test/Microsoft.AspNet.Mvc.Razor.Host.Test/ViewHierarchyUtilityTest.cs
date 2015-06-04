@@ -1,7 +1,10 @@
 // Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
+using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNet.Testing;
+using Microsoft.AspNet.Testing.xunit;
 using Xunit;
 
 namespace Microsoft.AspNet.Mvc.Razor
@@ -50,7 +53,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             var result = ViewHierarchyUtility.GetViewStartLocations(inputPath);
 
             // Assert
-            Assert.Equal(expected, result);
+            Assert.Equal(GetNormalizedPathsForMono(expected), result);
         }
 
         [Theory]
@@ -71,7 +74,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             var result = ViewHierarchyUtility.GetViewImportsLocations(inputPath);
 
             // Assert
-            Assert.Equal(expected, result);
+            Assert.Equal(GetNormalizedPathsForMono(expected), result);
         }
 
         [Theory]
@@ -91,7 +94,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             var result = ViewHierarchyUtility.GetViewStartLocations(inputPath);
 
             // Assert
-            Assert.Equal(expected, result);
+            Assert.Equal(GetNormalizedPathsForMono(expected), result);
         }
 
         [Theory]
@@ -112,7 +115,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             var result = ViewHierarchyUtility.GetViewImportsLocations(inputPath);
 
             // Assert
-            Assert.Equal(expected, result);
+            Assert.Equal(GetNormalizedPathsForMono(expected), result);
         }
 
         [Theory]
@@ -132,7 +135,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             var result = ViewHierarchyUtility.GetViewImportsLocations(inputPath);
 
             // Assert
-            Assert.Equal(expected, result);
+            Assert.Equal(GetNormalizedPathsForMono(expected), result);
         }
 
         [Theory]
@@ -156,7 +159,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             var result = ViewHierarchyUtility.GetViewStartLocations(viewPath);
 
             // Assert
-            Assert.Equal(expected, result);
+            Assert.Equal(GetNormalizedPathsForMono(expected), result);
         }
 
         [Theory]
@@ -181,7 +184,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             var result = ViewHierarchyUtility.GetViewImportsLocations(viewPath);
 
             // Assert
-            Assert.Equal(expected, result);
+            Assert.Equal(GetNormalizedPathsForMono(expected), result);
         }
 
         [Theory]
@@ -204,7 +207,7 @@ namespace Microsoft.AspNet.Mvc.Razor
             var result = ViewHierarchyUtility.GetViewStartLocations(viewPath);
 
             // Assert
-            Assert.Equal(expected, result);
+            Assert.Equal(GetNormalizedPathsForMono(expected), result);
         }
 
         [Fact]
@@ -220,7 +223,9 @@ namespace Microsoft.AspNet.Mvc.Razor
             Assert.Empty(result);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // ViewHierarchyUtility does not handle *nix paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public void GetViewStartLocations_ReturnsEmptySequence_IfPathIsRooted()
         {
             // Arrange
@@ -233,7 +238,9 @@ namespace Microsoft.AspNet.Mvc.Razor
             Assert.Empty(result);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // ViewHierarchyUtility does not handle *nix paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public void GetViewImportsLocations_ReturnsEmptySequence_IfPathIsRooted()
         {
             // Arrange
@@ -244,6 +251,22 @@ namespace Microsoft.AspNet.Mvc.Razor
 
             // Assert
             Assert.Empty(result);
+        }
+
+        private static IEnumerable<string> GetNormalizedPathsForMono(IEnumerable<string> inputPaths)
+        {
+            if (TestPlatformHelper.IsMono)
+            {
+                var result = new List<string>();
+                foreach (var inputPath in inputPaths)
+                {
+                    result.Add(inputPath.Replace('\\', '/'));
+                }
+
+                return result;
+            }
+
+            return inputPaths;
         }
     }
 }

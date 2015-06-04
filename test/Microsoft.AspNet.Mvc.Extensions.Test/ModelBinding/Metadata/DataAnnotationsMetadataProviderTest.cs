@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Mvc.ModelBinding.Validation;
+using Microsoft.AspNet.Testing;
 using Xunit;
 
 namespace Microsoft.AspNet.Mvc.ModelBinding.Metadata
@@ -447,29 +448,11 @@ namespace Microsoft.AspNet.Mvc.ModelBinding.Metadata
                         // Note order duplicates appear cannot be inferred easily e.g. does not match the source.
                         // Zero is before None but Two is before Duece in the class below.
                         typeof(EnumWithDuplicates),
-                        new List<KeyValuePair<string, string>>
-                        {
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Zero), "0"),
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.None), "0"),
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.One), "1"),
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Duece), "2"),
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Two), "2"),
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.MoreThanTwo), "3"),
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Three), "3"),
-                        }
+                        GetValuesListUptoThree()
                     },
                     {
                         typeof(EnumWithDuplicates?),
-                        new List<KeyValuePair<string, string>>
-                        {
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Zero), "0"),
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.None), "0"),
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.One), "1"),
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Duece), "2"),
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Two), "2"),
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.MoreThanTwo), "3"),
-                            new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Three), "3"),
-                        }
+                        GetValuesListUptoThree()
                     },
                     {
                         typeof(EnumWithFlags),
@@ -660,6 +643,36 @@ namespace Microsoft.AspNet.Mvc.ModelBinding.Metadata
             // Assert
             var validatorMetadata = Assert.Single(context.ValidationMetadata.ValidatorMetadata);
             Assert.Same(attribute, validatorMetadata);
+        }
+
+        private static List<KeyValuePair<string, string>> GetValuesListUptoThree()
+        {
+            if (TestPlatformHelper.IsMono)
+            {
+                return new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Zero), "0"),
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.None), "0"),
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.One), "1"),
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Two), "2"),
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Duece), "2"),
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Three), "3"),
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.MoreThanTwo), "3"),
+                };
+            }
+            else
+            {
+                return new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Zero), "0"),
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.None), "0"),
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.One), "1"),
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Two), "2"),
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Duece), "2"),
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.Three), "3"),
+                    new KeyValuePair<string, string>(nameof(EnumWithDuplicates.MoreThanTwo), "3"),
+                };
+            }
         }
 
         private class TestValidationAttribute : ValidationAttribute, IClientModelValidator

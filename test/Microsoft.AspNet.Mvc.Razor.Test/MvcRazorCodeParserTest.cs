@@ -10,6 +10,7 @@ using Microsoft.AspNet.Razor.Generator;
 using Microsoft.AspNet.Razor.Parser;
 using Microsoft.AspNet.Razor.Parser.SyntaxTree;
 using Microsoft.AspNet.Razor.Text;
+using Microsoft.AspNet.Testing;
 using Xunit;
 
 namespace Microsoft.AspNet.Mvc.Razor.Host.Test
@@ -173,7 +174,7 @@ namespace Microsoft.AspNet.Mvc.Razor.Host.Test
                     .Accepts(AcceptedCharacters.None),
                 factory.MetaCode("model ")
                     .Accepts(AcceptedCharacters.None),
-                factory.Code("Foo\r\n")
+                factory.Code("Foo" + Environment.NewLine)
                     .As(new ModelChunkGenerator(DefaultBaseType, "Foo"))
                     .Accepts(AcceptedCharacters.AnyExceptNewline),
                 factory.EmptyHtml(),
@@ -189,7 +190,11 @@ namespace Microsoft.AspNet.Mvc.Razor.Host.Test
 
             var expectedErrors = new[]
             {
-                new RazorError("Only one 'model' statement is allowed in a file.", new SourceLocation(13, 1, 1), 5)
+                new RazorError(
+                    "Only one 'model' statement is allowed in a file.",
+                    // Because /r is not present in mono
+                    TestPlatformHelper.IsMono ? new SourceLocation(12, 1, 1) : new SourceLocation(13, 1, 1),
+                    5)
             };
             expectedSpans.Zip(spans, (exp, span) => new { expected = exp, span = span }).ToList().ForEach(i => Assert.Equal(i.expected, i.span));
             Assert.Equal(expectedSpans, spans.ToArray());
@@ -215,7 +220,7 @@ namespace Microsoft.AspNet.Mvc.Razor.Host.Test
                     .Accepts(AcceptedCharacters.None),
                 factory.MetaCode("model ")
                     .Accepts(AcceptedCharacters.None),
-                factory.Code("Foo\r\n")
+                factory.Code("Foo" + Environment.NewLine)
                     .As(new ModelChunkGenerator(DefaultBaseType, "Foo"))
                     .Accepts(AcceptedCharacters.AnyExceptNewline),
                 factory.EmptyHtml(),
@@ -231,7 +236,11 @@ namespace Microsoft.AspNet.Mvc.Razor.Host.Test
 
             var expectedErrors = new[]
             {
-                new RazorError("The 'inherits' keyword is not allowed when a 'model' keyword is used.", new SourceLocation(21, 1, 9), 1)
+                new RazorError(
+                    "The 'inherits' keyword is not allowed when a 'model' keyword is used.",
+                    // Because /r is not present in mono
+                    TestPlatformHelper.IsMono ? new SourceLocation(20, 1, 9) : new SourceLocation(21, 1, 9),
+                    1)
             };
             expectedSpans.Zip(spans, (exp, span) => new { expected = exp, span = span }).ToList().ForEach(i => Assert.Equal(i.expected, i.span));
             Assert.Equal(expectedSpans, spans.ToArray());

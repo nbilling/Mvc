@@ -5,6 +5,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Xunit;
 
@@ -17,7 +18,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         private readonly Action<IServiceCollection> _configureServices = new FilesWebSite.Startup().ConfigureServices;
 
 
-        [Fact]
+        [ConditionalTheory]
+        // The FileProvider does not handle *nix paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task FileFromDisk_CanBeEnabled_WithMiddleware()
         {
             // Arrange
@@ -38,7 +41,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal("This is a sample text file", body);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // The FileProvider does not handle *nix paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task FileFromDisk_ReturnsFileWithFileName()
         {
             // Arrange

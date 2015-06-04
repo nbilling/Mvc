@@ -15,6 +15,8 @@ using Microsoft.AspNet.Razor.Chunks.Generators;
 using Microsoft.AspNet.Razor.CodeGenerators;
 using Microsoft.AspNet.Razor.CodeGenerators.Visitors;
 using Microsoft.AspNet.Razor.Parser;
+using Microsoft.AspNet.Testing;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.Internal;
 using Xunit;
 
@@ -24,7 +26,9 @@ namespace Microsoft.AspNet.Mvc.Razor
     {
         private static Assembly _assembly = typeof(MvcRazorHostTest).Assembly;
 
-        [Theory]
+        [ConditionalTheory]
+        // Paths are handled differently in *nix systems.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("//")]
         [InlineData("C:/")]
         [InlineData(@"\\")]
@@ -52,7 +56,9 @@ namespace Microsoft.AspNet.Mvc.Razor
             Assert.Equal("src/file.cshtml", chunkInheritanceUtility.InheritedChunkTreePagePath, StringComparer.Ordinal);
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // Paths are handled differently in *nix systems.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("//")]
         [InlineData("C:/")]
         [InlineData(@"\\")]
@@ -104,42 +110,43 @@ namespace Microsoft.AspNet.Mvc.Razor
         {
             // Arrange
             var fileProvider = new TestFileProvider();
-            var host = new MvcRazorHost(new DefaultChunkTreeCache(fileProvider))
+            var host = new MvcRazorHostWithNormalizedNewLine(new DefaultChunkTreeCache(fileProvider))
             {
                 DesignTimeMode = true
             };
-            var expectedLineMappings = new List<LineMapping>
-            {
-                BuildLineMapping(documentAbsoluteIndex: 7,
-                                 documentLineIndex: 0,
-                                 documentCharacterIndex: 7,
-                                 generatedAbsoluteIndex: 444,
-                                 generatedLineIndex: 12,
-                                 generatedCharacterIndex: 7,
-                                 contentLength: 8),
-                BuildLineMapping(documentAbsoluteIndex: 33,
-                                 documentLineIndex: 2,
-                                 documentCharacterIndex: 14,
-                                 generatedAbsoluteIndex: 823,
-                                 generatedLineIndex: 25,
-                                 generatedCharacterIndex: 14,
-                                 contentLength: 85),
-                BuildLineMapping(documentAbsoluteIndex: 139,
-                                 documentLineIndex: 4,
-                                 documentCharacterIndex: 17,
-                                 generatedAbsoluteIndex: 2313,
-                                 generatedLineIndex: 55,
-                                 generatedCharacterIndex: 95,
-                                 contentLength: 3),
-                BuildLineMapping(
-                    documentAbsoluteIndex: 166,
-                    documentLineIndex: 5,
-                    documentCharacterIndex: 18,
-                    generatedAbsoluteIndex: 2626,
-                    generatedLineIndex: 61,
-                    generatedCharacterIndex: 87,
-                    contentLength: 5),
-            };
+            var expectedLineMappings = 
+                new []
+                {
+                    BuildLineMapping(documentAbsoluteIndex: 7,
+                                     documentLineIndex: 0,
+                                     documentCharacterIndex: 7,
+                                     generatedAbsoluteIndex: 444,
+                                     generatedLineIndex: 12,
+                                     generatedCharacterIndex: 7,
+                                     contentLength: 8),
+                    BuildLineMapping(documentAbsoluteIndex: 33,
+                                     documentLineIndex: 2,
+                                     documentCharacterIndex: 14,
+                                     generatedAbsoluteIndex: 823,
+                                     generatedLineIndex: 25,
+                                     generatedCharacterIndex: 14,
+                                     contentLength: 85),
+                    BuildLineMapping(documentAbsoluteIndex: 139,
+                                     documentLineIndex: 4,
+                                     documentCharacterIndex: 17,
+                                     generatedAbsoluteIndex: 2313,
+                                     generatedLineIndex: 55,
+                                     generatedCharacterIndex: 95,
+                                     contentLength: 3),
+                    BuildLineMapping(
+                        documentAbsoluteIndex: 166,
+                        documentLineIndex: 5,
+                        documentCharacterIndex: 18,
+                        generatedAbsoluteIndex: 2626,
+                        generatedLineIndex: 61,
+                        generatedCharacterIndex: 87,
+                        contentLength: 5),
+                };
 
             // Act and Assert
             RunDesignTimeTest(host,
@@ -169,7 +176,7 @@ namespace Microsoft.AspNet.Mvc.Razor
         {
             // Arrange
             var fileProvider = new TestFileProvider();
-            var host = new MvcRazorHost(new DefaultChunkTreeCache(fileProvider))
+            var host = new MvcRazorHostWithNormalizedNewLine(new DefaultChunkTreeCache(fileProvider))
             {
                 DesignTimeMode = true
             };
@@ -203,16 +210,17 @@ namespace Microsoft.AspNet.Mvc.Razor
         {
             // Arrange
             var fileProvider = new TestFileProvider();
-            var host = new MvcRazorHost(new DefaultChunkTreeCache(fileProvider))
+            var host = new MvcRazorHostWithNormalizedNewLine(new DefaultChunkTreeCache(fileProvider))
             {
                 DesignTimeMode = true
             };
             host.NamespaceImports.Clear();
-            var expectedLineMappings = new List<LineMapping>
-            {
-                BuildLineMapping(1, 0, 1, 59, 3, 0, 17),
-                BuildLineMapping(28, 1, 8, 706, 26, 8, 20)
-            };
+            var expectedLineMappings =
+                new List<LineMapping>
+                {
+                    BuildLineMapping(1, 0, 1, 59, 3, 0, 17),
+                    BuildLineMapping(28, 1, 8, 706, 26, 8, 20)
+                };
 
             // Act and Assert
             RunDesignTimeTest(host, "Inject", expectedLineMappings);
@@ -223,17 +231,18 @@ namespace Microsoft.AspNet.Mvc.Razor
         {
             // Arrange
             var fileProvider = new TestFileProvider();
-            var host = new MvcRazorHost(new DefaultChunkTreeCache(fileProvider))
+            var host = new MvcRazorHostWithNormalizedNewLine(new DefaultChunkTreeCache(fileProvider))
             {
                 DesignTimeMode = true
             };
             host.NamespaceImports.Clear();
-            var expectedLineMappings = new[]
-            {
-                BuildLineMapping(7, 0, 7, 214, 6, 7, 7),
-                BuildLineMapping(24, 1, 8, 731, 26, 8, 20),
-                BuildLineMapping(54, 2, 8, 957, 34, 8, 23)
-            };
+            var expectedLineMappings =
+                new[]
+                {
+                    BuildLineMapping(7, 0, 7, 214, 6, 7, 7),
+                    BuildLineMapping(24, 1, 8, 731, 26, 8, 20),
+                    BuildLineMapping(54, 2, 8, 957, 34, 8, 23)
+                };
 
             // Act and Assert
             RunDesignTimeTest(host, "InjectWithModel", expectedLineMappings);
@@ -244,19 +253,19 @@ namespace Microsoft.AspNet.Mvc.Razor
         {
             // Arrange
             var fileProvider = new TestFileProvider();
-            var host = new MvcRazorHost(new DefaultChunkTreeCache(fileProvider))
+            var host = new MvcRazorHostWithNormalizedNewLine(new DefaultChunkTreeCache(fileProvider))
             {
                 DesignTimeMode = true
             };
             host.NamespaceImports.Clear();
             var expectedLineMappings = new[]
-            {
-                BuildLineMapping(7, 0, 7, 222, 6, 7, 7),
-                BuildLineMapping(24, 1, 8, 747, 26, 8, 20),
-                BuildLineMapping(58, 2, 8, 977, 34, 8, 23),
-                BuildLineMapping(93, 3, 8, 1210, 42, 8, 21),
-                BuildLineMapping(129, 4, 8, 1441, 50, 8, 24),
-            };
+                {
+                    BuildLineMapping(7, 0, 7, 222, 6, 7, 7),
+                    BuildLineMapping(24, 1, 8, 747, 26, 8, 20),
+                    BuildLineMapping(58, 2, 8, 977, 34, 8, 23),
+                    BuildLineMapping(93, 3, 8, 1210, 42, 8, 21),
+                    BuildLineMapping(129, 4, 8, 1441, 50, 8, 24),
+                };
 
             // Act and Assert
             RunDesignTimeTest(host, "InjectWithSemicolon", expectedLineMappings);
@@ -267,7 +276,7 @@ namespace Microsoft.AspNet.Mvc.Razor
         {
             // Arrange
             var fileProvider = new TestFileProvider();
-            var host = new MvcRazorHost(new DefaultChunkTreeCache(fileProvider))
+            var host = new MvcRazorHostWithNormalizedNewLine(new DefaultChunkTreeCache(fileProvider))
             {
                 DesignTimeMode = true
             };
@@ -286,7 +295,12 @@ namespace Microsoft.AspNet.Mvc.Razor
         {
             var inputFile = "TestFiles/Input/" + testName + ".cshtml";
             var outputFile = "TestFiles/Output/Runtime/" + testName + ".cs";
-            var expectedCode = ResourceFile.ReadResource(_assembly, outputFile, sourceFile: false);
+            var expectedCode =
+                ResourceFile.ReadResource(
+                    _assembly,
+                    outputFile,
+                    sourceFile: false,
+                    lineNormalizer: "\r\n");
 
             // Act
             GeneratorResults results;
@@ -312,7 +326,12 @@ namespace Microsoft.AspNet.Mvc.Razor
         {
             var inputFile = "TestFiles/Input/" + testName + ".cshtml";
             var outputFile = "TestFiles/Output/DesignTime/" + testName + ".cs";
-            var expectedCode = ResourceFile.ReadResource(_assembly, outputFile, sourceFile: false);
+            var expectedCode =
+                ResourceFile.ReadResource(
+                    _assembly,
+                    outputFile,
+                    sourceFile: false,
+                    lineNormalizer: "\r\n");
 
             // Act
             GeneratorResults results;
@@ -367,6 +386,30 @@ namespace Microsoft.AspNet.Mvc.Razor
 #endif
         }
 
+        private static Stream NormalizeNewLines(Stream inputStream)
+        {
+            if (!inputStream.CanSeek)
+            {
+                var memoryStream = new MemoryStream();
+                inputStream.CopyTo(memoryStream);
+
+                // We don't have to dispose the input stream since it is owned externally.
+                inputStream = memoryStream;
+            }
+
+            inputStream.Position = 0;
+            var reader = new StreamReader(inputStream);
+
+            // Normalize newlines to be \r\n. This is to ensure when running tests cross plat the final test output
+            // is compared against test files in a normalized fashion.
+            var fileContents = reader.ReadToEnd().Replace(Environment.NewLine, "\r\n");
+
+            // Since this is a test we can normalize to utf8.
+            inputStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(fileContents));
+
+            return inputStream;
+        }
+
         private static LineMapping BuildLineMapping(int documentAbsoluteIndex,
                                                     int documentLineIndex,
                                                     int documentCharacterIndex,
@@ -401,6 +444,59 @@ namespace Microsoft.AspNet.Mvc.Razor
                 InheritedChunkTreePagePath = pagePath;
 
                 return new ChunkTree[0];
+            }
+        }
+
+        private class MvcRazorHostWithNormalizedNewLine : MvcRazorHost
+        {
+            public MvcRazorHostWithNormalizedNewLine(IChunkTreeCache codeTreeCache)
+                : base(codeTreeCache)
+            { }
+
+            public override CodeGenerator DecorateCodeGenerator(
+                CodeGenerator incomingBuilder,
+                CodeGeneratorContext context)
+            {
+                base.DecorateCodeGenerator(incomingBuilder, context);
+
+                return new TestCSharpCodeGenerator(
+                    context,
+                    DefaultModel,
+                    "Microsoft.AspNet.Mvc.Razor.Internal.RazorInjectAttribute",
+                    new GeneratedTagHelperAttributeContext
+                    {
+                        ModelExpressionTypeName = ModelExpressionType,
+                        CreateModelExpressionMethodName = CreateModelExpressionMethod
+                    });
+            }
+
+            protected class TestCSharpCodeGenerator : MvcCSharpCodeGenerator
+            {
+                private readonly GeneratedTagHelperAttributeContext _tagHelperAttributeContext;
+
+                public TestCSharpCodeGenerator(CodeGeneratorContext context,
+                                             string defaultModel,
+                                             string activateAttribute,
+                                             GeneratedTagHelperAttributeContext tagHelperAttributeContext)
+                    : base(context, defaultModel, activateAttribute, tagHelperAttributeContext)
+                {
+                    _tagHelperAttributeContext = tagHelperAttributeContext;
+                }
+
+                protected override CSharpCodeWriter CreateCodeWriter()
+                {
+                    return new TestCodeWriter();
+                }
+
+                private class TestCodeWriter : CSharpCodeWriter
+                {
+                    public TestCodeWriter()
+                    {
+                        // We normalize newlines so no matter what platform we're on they're consistent (for code generation
+                        // tests).
+                        NewLine = "\r\n";
+                    }
+                }
             }
         }
 
@@ -443,6 +539,21 @@ namespace Microsoft.AspNet.Mvc.Razor
                     : base(context, defaultModel, activateAttribute, tagHelperAttributeContext)
                 {
                     _tagHelperAttributeContext = tagHelperAttributeContext;
+                }
+
+                protected override CSharpCodeWriter CreateCodeWriter()
+                {
+                    return new TestCodeWriter();
+                }
+
+                private class TestCodeWriter : CSharpCodeWriter
+                {
+                    public TestCodeWriter()
+                    {
+                        // We normalize newlines so no matter what platform we're on they're consistent (for code generation
+                        // tests).
+                        NewLine = "\r\n";
+                    }
                 }
 
                 protected override CSharpCodeVisitor CreateCSharpCodeVisitor(

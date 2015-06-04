@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -62,7 +63,7 @@ namespace Microsoft.AspNet.Mvc
                 return null;
             }
 
-            return assembly.GetManifestResourceStream(fullName);
+            return NormalizeNewLines(assembly.GetManifestResourceStream(fullName));
         }
 
         /// <summary>
@@ -126,6 +127,8 @@ namespace Microsoft.AspNet.Mvc
         /// <paramref name="resourceName"/> is an output file and, if <c>GENERATE_BASELINES</c> is defined, it will
         /// soon be generated if missing.
         /// </param>
+        /// <paramref name="lineNormalizer"/> is the string with which NewLines are normalized.
+        /// </param>
         /// <returns>
         /// The <see cref="string"/> content of <paramref name="resourceName"/> from <paramref name="assembly"/>'s
         /// manifest. <c>null</c> if <c>GENERATE_BASELINES</c> is defined, <paramref name="sourceFile"/> is
@@ -136,8 +139,17 @@ namespace Microsoft.AspNet.Mvc
         /// <paramref name="resourceName"/> is not found in <paramref name="assembly"/>.
         /// </exception>
         /// <remarks>Normalizes line endings to <see cref="Environment.NewLine"/>.</remarks>
-        public static string ReadResource(Assembly assembly, string resourceName, bool sourceFile)
+        public static string ReadResource(
+            Assembly assembly,
+            string resourceName,
+            bool sourceFile,
+            string lineNormalizer = null)
         {
+            if (lineNormalizer == null)
+            {
+                lineNormalizer = Environment.NewLine;
+            }
+
             using (var stream = GetResourceStream(assembly, resourceName, sourceFile))
             {
                 if (stream == null)
@@ -153,7 +165,7 @@ namespace Microsoft.AspNet.Mvc
                     // core.safecrlf, and .gitattributes from the equation and matches what MVC returns.
                     return content
                         .Replace("\r", string.Empty)
-                        .Replace("\n", Environment.NewLine);
+                        .Replace("\n", lineNormalizer);
                 }
             }
         }
@@ -187,6 +199,32 @@ namespace Microsoft.AspNet.Mvc
                 var fullPath = Path.Combine(projectPath, resourceName);
                 WriteFile(fullPath, content);
             }
+        }
+
+        private static Stream NormalizeNewLines(Stream inputStream)
+        {
+            if (!inputStream.CanSeek)
+            {
+                var memoryStream = new MemoryStream();
+                inputStream.CopyTo(memoryStream);
+
+                // We don't have to dispose the input stream since it is owned externally.
+                inputStream = memoryStream;
+            }
+
+            inputStream.Position = 0;
+            var reader = new StreamReader(inputStream);
+
+            // Normalize newlines to be \r\n. This is to ensure when running tests cross plat the final test output
+            // is compared against test files in a normalized fashion.
+            var fileContents = reader.ReadToEnd()
+                                        .Replace("\r", string.Empty)
+                                        .Replace("\n", "\r\n");
+
+            // Since this is a test we can normalize to utf8.
+            inputStream = new MemoryStream(Encoding.UTF8.GetBytes(fileContents));
+
+            return inputStream;
         }
 
         private static bool Exists(Assembly assembly, string fullName)

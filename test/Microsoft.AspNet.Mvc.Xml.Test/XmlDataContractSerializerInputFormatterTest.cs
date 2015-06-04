@@ -284,11 +284,8 @@ namespace Microsoft.AspNet.Mvc.Xml
         public async Task ReadAsync_FallsbackToUTF8_WhenCharSet_NotInContentType()
         {
             // Arrange
-            var expectedException = TestPlatformHelper.IsMono ? typeof(SerializationException) :
-                                                                typeof(XmlException);
-            var expectedMessage = TestPlatformHelper.IsMono ?
-                "Expected element 'TestLevelTwo' in namespace '', but found Element node 'DummyClass' in namespace ''" :
-                "The expected encoding 'utf-8' does not match the actual encoding 'utf-16LE'.";
+            var expectedException = typeof(XmlException);
+            var expectedMessage = "The expected encoding 'utf-8' does not match the actual encoding 'utf-16LE'.";
             var inpStart = Encodings.UTF16EncodingLittleEndian.GetBytes("<?xml version=\"1.0\" encoding=\"UTF-16\"?>" +
                 "<DummyClass><SampleInt>");
             byte[] inp = { 192, 193 };
@@ -311,11 +308,8 @@ namespace Microsoft.AspNet.Mvc.Xml
         public async Task ReadAsync_UsesContentTypeCharSet_ToReadStream()
         {
             // Arrange
-            var expectedException = TestPlatformHelper.IsMono ? typeof(SerializationException) :
-                                                                typeof(XmlException);
-            var expectedMessage = TestPlatformHelper.IsMono ?
-                "Expected element 'TestLevelTwo' in namespace '', but found Element node 'DummyClass' in namespace ''" :
-                "The expected encoding 'utf-16LE' does not match the actual encoding 'utf-8'.";
+            var expectedException = typeof(XmlException);
+            var expectedMessage = "The expected encoding 'utf-16LE' does not match the actual encoding 'utf-8'.";
             var inputBytes = Encodings.UTF8EncodingWithoutBOM.GetBytes("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
                 "<DummyClass><SampleInt>1000</SampleInt></DummyClass>");
 

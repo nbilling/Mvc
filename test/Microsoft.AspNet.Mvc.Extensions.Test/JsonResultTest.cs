@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.Routing;
+using Microsoft.AspNet.Testing;
 using Microsoft.Framework.Logging;
 using Microsoft.Framework.OptionsModel;
 using Microsoft.Net.Http.Headers;
@@ -25,7 +26,9 @@ namespace Microsoft.AspNet.Mvc
             = new byte[] { 123, 34, 102, 111, 111, 34, 58, 34, 97, 98, 99, 100, 34, 125 };
 
         private static readonly byte[] _abcdIndentedUTF8Bytes
-            = new byte[] { 123, 13, 10, 32, 32, 34, 102, 111, 111, 34, 58, 32, 34, 97, 98, 99, 100, 34, 13, 10, 125 };
+            = TestPlatformHelper.IsMono ?
+            new byte[] { 123, 10, 32, 32, 34, 102, 111, 111, 34, 58, 32, 34, 97, 98, 99, 100, 34, 10, 125 } :
+            new byte[] { 123, 13, 10, 32, 32, 34, 102, 111, 111, 34, 58, 32, 34, 97, 98, 99, 100, 34, 13, 10, 125 };
 
         [Fact]
         public async Task ExecuteResultAsync_OptionsFormatter_WithoutBOM()

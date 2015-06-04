@@ -10,6 +10,7 @@ using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http.Features;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.Routing;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Moq;
@@ -19,7 +20,9 @@ namespace Microsoft.AspNet.Mvc
 {
     public class FilePathResultTest
     {
-        [Fact]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public void Constructor_SetsFileName()
         {
             // Arrange & Act
@@ -30,7 +33,9 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal(path, result.FileName);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ExecuteResultAsync_FallsbackToStreamCopy_IfNoIHttpSendFilePresent()
         {
             // Arrange
@@ -56,7 +61,9 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal("FilePathResultTestFile contents", contents);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ExecuteResultAsync_FallsBackToThePhysicalFileProvider_IfNoFileProviderIsPresent()
         {
             // Arrange
@@ -85,7 +92,9 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal("FilePathResultTestFile contents", contents);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ExecuteResultAsync_CallsSendFileAsync_IfIHttpSendFilePresent()
         {
             // Arrange
@@ -113,7 +122,9 @@ namespace Microsoft.AspNet.Mvc
             sendFileMock.Verify();
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ExecuteResultAsync_SetsSuppliedContentTypeAndEncoding()
         {
             // Arrange
@@ -143,7 +154,9 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal(expectedContentType, httpContext.Response.ContentType);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ExecuteResultAsync_WorksWithAbsolutePaths_UsingBackSlash()
         {
             // Arrange
@@ -174,7 +187,9 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal("FilePathResultTestFile contents", contents);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ExecuteResultAsync_WorksWithAbsolutePaths_UsingForwardSlash()
         {
             // Arrange
@@ -203,7 +218,9 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal("FilePathResultTestFile contents", contents);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ExecuteResultAsync_WorksWithNonDiskBasedFiles()
         {
             // Arrange
@@ -232,7 +249,9 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal(expectedData, contents);
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         // Root of the file system, forward slash and back slash
         [InlineData("FilePathResultTestFile.txt", "TestFiles/FilePathResultTestFile.txt")]
         [InlineData("/FilePathResultTestFile.txt", "TestFiles/FilePathResultTestFile.txt")]
@@ -279,7 +298,9 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal(expectedPath, resolveFilePathResult.PhysicalFilePath);
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("~\\FilePathResultTestFile.txt", "TestFiles/FilePathResultTestFile.txt")]
         [InlineData("~\\SubFolder\\SubFolderTestFile.txt", "TestFiles/SubFolder/SubFolderTestFile.txt")]
         [InlineData("~\\SubFolder/SubFolderTestFile.txt", "TestFiles/SubFolder/SubFolderTestFile.txt")]
@@ -301,7 +322,9 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal(path, ex.FileName);
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         // Root of the file system, forward slash and back slash
         [InlineData("FilePathResultTestFile.txt")]
         [InlineData("/FilePathResultTestFile.txt")]
@@ -351,7 +374,9 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal(expectedFileName, ex.FileName);
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("FilePathResultTestFile.txt", "FilePathResultTestFile.txt")]
         [InlineData("/FilePathResultTestFile.txt", "/FilePathResultTestFile.txt")]
         [InlineData("\\FilePathResultTestFile.txt", "/FilePathResultTestFile.txt")]
@@ -414,7 +439,9 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal(expectedPath, normalizedPath);
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         // '~/' and '~\' mean the application root folder
         [InlineData("~\\FilePathResultTestFile.txt")]
         [InlineData("~\\SubFolder\\SubFolderTestFile.txt")]
@@ -434,7 +461,9 @@ namespace Microsoft.AspNet.Mvc
             Assert.Equal(path, normalizedPath);
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("C:\\Folder\\SubFolder\\File.txt")]
         [InlineData("C:/Folder/SubFolder/File.txt")]
         [InlineData("\\\\NetworkLocation\\Folder\\SubFolder\\File.txt")]
@@ -454,7 +483,9 @@ namespace Microsoft.AspNet.Mvc
             Assert.True(isRooted);
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("FilePathResultTestFile.txt")]
         [InlineData("/FilePathResultTestFile.txt")]
         [InlineData("\\FilePathResultTestFile.txt")]

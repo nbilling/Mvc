@@ -51,8 +51,7 @@ namespace Microsoft.AspNet.Mvc.Test
         public async Task TryUpdateModel_ReturnsFalse_IfModelValidationFails()
         {
             // Arrange
-            var expectedMessage = TestPlatformHelper.IsMono ? "The field MyProperty is invalid." :
-                                                               "The MyProperty field is required.";
+            var expectedMessage = "The MyProperty field is required.";
             var binders = new IModelBinder[]
             {
                 new TypeConverterModelBinder(),

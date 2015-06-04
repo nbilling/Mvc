@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using LocalizationWebSite;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Xunit;
@@ -48,7 +49,10 @@ index
 partial
 mypartial
 </language-layout>";
-                yield return new[] { "na", expected3 };
+                if (!TestPlatformHelper.IsMono)
+                {
+                    yield return new[] { "na", expected3 };
+                }
 
             }
         }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing;
 using Microsoft.Framework.DependencyInjection;
 using RazorPageExecutionInstrumentationWebSite;
 using Xunit;
@@ -31,7 +32,25 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
                                            @"</p>",
                                            @"</div>");
 
-                var expectedLineMappings = new[]
+                var expectedLineMappings =
+                TestPlatformHelper.IsMono ?
+                new[]
+                {
+                    Tuple.Create(90, 1, true),
+                    Tuple.Create(92, 16, false),
+                    Tuple.Create(108, 1, true),
+                    Tuple.Create(0, 2, true),
+                    Tuple.Create(2, 8, true),
+                    Tuple.Create(10, 16, false),
+                    Tuple.Create(26, 1, true),
+                    Tuple.Create(27, 19, true),
+                    Tuple.Create(0, 6, true),
+                    Tuple.Create(7, 12, false),
+                    Tuple.Create(19, 1, true),
+                    Tuple.Create(21, 12, false),
+                    Tuple.Create(33, 7, true),
+                } :
+                new[]
                 {
                     Tuple.Create(93, 2, true),
                     Tuple.Create(96, 16, false),
@@ -62,7 +81,35 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
                                             "",
                                             @"<p class=""class"">partial-content</p>",
                                             "</div>");
-                var expectedLineMappings2 = new[]
+                var expectedLineMappings2 =
+                TestPlatformHelper.IsMono ?
+                new[]
+                {
+                    Tuple.Create(90, 1, true),
+                    Tuple.Create(92, 16, false),
+                    Tuple.Create(108, 1, true),
+                    Tuple.Create(0, 26, true),
+                    Tuple.Create(27, 39, false),
+                    // Html.PartialAsync()
+                    Tuple.Create(27, 3, true),
+                    Tuple.Create(30, 8, true),
+                    Tuple.Create(38, 4, false),
+                    Tuple.Create(42, 1, true),
+                    Tuple.Create(43, 20, true),
+                    Tuple.Create(66, 1, true),
+                    // Html.RenderPartial()
+                    Tuple.Create(27, 3, true),
+                    Tuple.Create(30, 8, true),
+                    Tuple.Create(38, 4, false),
+                    Tuple.Create(42, 1, true),
+                    Tuple.Create(43, 20, true),
+                    Tuple.Create(0, 6, true),
+                    Tuple.Create(7, 12, false),
+                    Tuple.Create(19, 1, true),
+                    Tuple.Create(21, 12, false),
+                    Tuple.Create(33, 7, true)
+                } :
+                new[]
                 {
                     Tuple.Create(93, 2, true),
                     Tuple.Create(96, 16, false),
@@ -179,7 +226,25 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         public async Task SwitchingFromNonInstrumentedToInstrumentedWorksForLayoutAndViewStarts()
         {
             // Arrange - 1
-            var expectedLineMappings = new[]
+            var expectedLineMappings =
+            TestPlatformHelper.IsMono ?
+            new[]
+            {
+                Tuple.Create(90, 1, true),
+                Tuple.Create(92, 16, false),
+                Tuple.Create(108, 1, true),
+                Tuple.Create(0, 2, true),
+                Tuple.Create(2, 8, true),
+                Tuple.Create(10, 16, false),
+                Tuple.Create(26, 1, true),
+                Tuple.Create(27, 19, true),
+                Tuple.Create(0, 6, true),
+                Tuple.Create(7, 12, false),
+                Tuple.Create(19, 1, true),
+                Tuple.Create(21, 12, false),
+                Tuple.Create(33, 7, true),
+            } :
+            new[]
             {
                 Tuple.Create(93, 2, true),
                 Tuple.Create(96, 16, false),

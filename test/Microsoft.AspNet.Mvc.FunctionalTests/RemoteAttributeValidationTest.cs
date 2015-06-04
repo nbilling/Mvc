@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Xunit;
 
@@ -22,7 +23,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         private readonly Action<IApplicationBuilder> _app = new ValidationWebSite.Startup().Configure;
         private readonly Action<IServiceCollection> _configureServices = new ValidationWebSite.Startup().ConfigureServices;
 
-        [Theory]
+        [ConditionalTheory]
+        // FileProvider's Watch does not handle *nix systems.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("Aria", "/Aria")]
         [InlineData("Root", "")]
         public async Task RemoteAttribute_LeadsToExpectedValidationAttributes(string areaName, string pathSegment)

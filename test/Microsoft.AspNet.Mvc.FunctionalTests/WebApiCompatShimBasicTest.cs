@@ -11,6 +11,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing;
 using Microsoft.Framework.DependencyInjection;
 using Newtonsoft.Json;
 using Xunit;
@@ -301,7 +302,11 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             // Assert		
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(response.Content);
-            Assert.NotNull(response.Content.Headers.ContentLength);
+            if (!TestPlatformHelper.IsMono)
+            {
+                // Mono issue - https://github.com/aspnet/External/issues/20
+                Assert.NotNull(response.Content.Headers.ContentLength);
+            }
             Assert.Null(response.Headers.TransferEncodingChunked);
 
             // When HttpClient by default reads and buffers the resposne body, it diposes the

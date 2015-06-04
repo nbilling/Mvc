@@ -729,7 +729,8 @@ namespace Microsoft.AspNet.Mvc.TagHelpers
             // Assert
             Assert.Equal(
                 "<script src=\"HtmlEncode[[/js/site.js?v=f4OxZX_x_FO5LcGBSKHWXfwtSx-j1ncoSt3SABJtkGk]]\">" +
-                "</script>\r\n<script>(isavailable()||document.write(\"<script src=\\\"JavaScriptStringEncode[[fallback.js" +
+                "</script>" + Environment.NewLine +
+                "<script>(isavailable()||document.write(\"<script src=\\\"JavaScriptStringEncode[[fallback.js" +
                 "?v=f4OxZX_x_FO5LcGBSKHWXfwtSx-j1ncoSt3SABJtkGk]]\\\"><\\/script>\"));</script>",
                 output.Content.GetContent());
         }

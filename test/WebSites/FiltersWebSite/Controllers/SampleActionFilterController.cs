@@ -7,7 +7,7 @@ using Microsoft.AspNet.Mvc;
 namespace FiltersWebSite
 {
     [ControllerActionFilter]
-    public class ActionFilterController : Controller
+    public class SampleActionFilterController : Controller
     {
         [ChangeContentActionFilter]
         public IActionResult GetHelloWorld(IList<ContentResult> fromGlobalActionFilter)

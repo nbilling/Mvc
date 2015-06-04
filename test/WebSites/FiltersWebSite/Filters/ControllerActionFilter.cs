@@ -29,7 +29,7 @@ namespace FiltersWebSite
                     "On Controller Action Filter - OnActionExecuting");
             }
 
-            if (context.ActionDescriptor.DisplayName == "FiltersWebSite.ActionFilterController.GetHelloWorld")
+            if (context.ActionDescriptor.DisplayName == "FiltersWebSite.SampleActionFilterController.GetHelloWorld")
             {
                 (context.ActionArguments["fromGlobalActionFilter"] as List<ContentResult>)
                     .Add(Helpers.GetContentResult(context.Result, "Controller Action filter - OnActionExecuting"));

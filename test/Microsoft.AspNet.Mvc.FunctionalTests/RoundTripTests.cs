@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using ModelBindingWebSite;
 using ModelBindingWebSite.Models;
@@ -51,7 +52,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         }
 
         // Uses the expression p => p.Parent.Age
-        [Fact]
+        [ConditionalTheory]
+        // https://github.com/aspnet/Mvc/issues/2670
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task RoundTrippedValues_GetsModelBound_ForSubPropertyExpressions()
         {
             // Arrange

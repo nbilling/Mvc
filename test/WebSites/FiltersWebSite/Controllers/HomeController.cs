@@ -59,7 +59,7 @@ namespace FiltersWebSite.Controllers
         }
 
         [ThrowingActionFilter]
-        public string ThrowingActionFilter()
+        public string ActionFilterThrows()
         {
             return "Throwing Action Filter";
         }

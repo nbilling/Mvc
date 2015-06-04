@@ -62,9 +62,7 @@ namespace Microsoft.AspNet.Mvc.ModelBinding.Test
         public async Task BindModelAddsModelErrorsOnInvalidCharacters()
         {
             // Arrange
-            var expected = TestPlatformHelper.IsMono ?
-                "Invalid length." :
-                 "The supplied value is invalid for foo.";
+            var expected = "The supplied value is invalid for foo.";
 
             var valueProvider = new SimpleHttpValueProvider()
             {

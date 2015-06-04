@@ -83,7 +83,7 @@ namespace Microsoft.AspNet.Mvc.Xml
         {
             // Arrange
             var expectedMessage = "The type must be an interface and must be or derive from 'IEnumerable`1'." +
-                                  "\r\nParameter name: sourceEnumerableOfT";
+                                  Environment.NewLine + "Parameter name: sourceEnumerableOfT";
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentException>(() => new EnumerableWrapperProvider(

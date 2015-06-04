@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Internal;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Net.Http.Headers;
 using Moq;
 using Xunit;
@@ -413,7 +414,8 @@ namespace Microsoft.AspNet.Mvc.Xml
                 async () => await formatter.WriteAsync(outputFormatterContext));
         }
 
-        [Fact]
+        [ConditionalTheory]
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task WriteAsync_ThrowsWhenNotConfiguredWithPreserveReferences()
         {
             // Arrange
@@ -425,7 +427,7 @@ namespace Microsoft.AspNet.Mvc.Xml
             var outputFormatterContext = GetOutputFormatterContext(parent, parent.GetType());
 
             // Act & Assert
-            await Assert.ThrowsAsync(typeof(SerializationException),
+            var ex = await Assert.ThrowsAsync(typeof(SerializationException),
                 async () => await formatter.WriteAsync(outputFormatterContext));
         }
 

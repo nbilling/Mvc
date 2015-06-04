@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Routing;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Newtonsoft.Json;
 using Xunit;
@@ -912,12 +913,14 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal("Departments", result.RouteName);
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // https://github.com/aspnet/Mvc/issues/2672
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("http://localhost/Duplicate/Index")]
         [InlineData("http://localhost/api/Duplicate/IndexAttribute")]
         [InlineData("http://localhost/api/Duplicate")]
         [InlineData("http://localhost/conventional/Duplicate")]
-        public async Task AttributeRoutedAction_ThowsIfConventionalRouteWithTheSameName(string url)
+        public async Task AttributeRoutedAction_ThrowsIfConventionalRouteWithTheSameName(string url)
         {
             // Arrange
             var server = TestHelper.CreateServer(_app, SiteName, _configureServices);
@@ -1098,6 +1101,8 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         }
 
         [Fact]
+        // https://github.com/aspnet/Mvc/issues/2672
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task AttributeRoutedAction_InArea_ImplicitLeaveArea()
         {
             // Arrange
@@ -1121,7 +1126,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal("/Home/Contact", result.Link);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // https://github.com/aspnet/Mvc/issues/2672
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task AttributeRoutedAction_InArea_LinkToConventionalRoutedActionInArea()
         {
             // Arrange
@@ -1171,7 +1178,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal("/ContosoCorp/Trains", result.Link);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // https://github.com/aspnet/Mvc/issues/2672
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ConventionalRoutedAction_InArea_LinkToAnotherArea()
         {
             // Arrange
@@ -1196,7 +1205,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal("/Admin/Users/All", result.Link);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // https://github.com/aspnet/Mvc/issues/2672
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task AttributeRoutedAction_InArea_LinkToAnotherArea()
         {
             // Arrange

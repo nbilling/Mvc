@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using RazorWebSite;
@@ -63,7 +64,9 @@ ViewWithNestedLayout-Content
             }
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [MemberData(nameof(RazorView_ExecutesPageAndLayoutData))]
         public async Task RazorView_ExecutesPageAndLayout(string actionName, string expected)
         {
@@ -77,7 +80,9 @@ ViewWithNestedLayout-Content
             Assert.Equal(expected, body.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task RazorView_ExecutesPartialPagesWithCorrectContext()
         {
             var expected = string.Join(Environment.NewLine,
@@ -98,7 +103,9 @@ ViewWithNestedLayout-Content
             Assert.Equal(expected, body.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task RazorView_DoesNotThrow_PartialViewWithEnumerableModel()
         {
             // Arrange
@@ -114,7 +121,9 @@ ViewWithNestedLayout-Content
             Assert.Equal(expected, body.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task RazorView_PassesViewContextBetweenViewAndLayout()
         {
             var expected =
@@ -153,7 +162,9 @@ component-content";
             }
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [MemberData(nameof(RazorViewEngine_UsesAllExpandedPathsToLookForViewsData))]
         public async Task RazorViewEngine_UsesViewExpandersForViewsAndPartials(string value, string expected)
         {
@@ -184,7 +195,9 @@ component-content";
             }
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [MemberData(nameof(ViewLocationExpanders_PassesInIsPartialToViewLocationExpanderContextData))]
         public async Task ViewLocationExpanders_PassesInIsPartialToViewLocationExpanderContext(string action, string expected)
         {
@@ -264,7 +277,9 @@ ViewWithNestedLayout-Content
             Assert.Equal(expected, body.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task LayoutValueIsPassedBetweenNestedViewStarts()
         {
             // Arrange
@@ -304,7 +319,9 @@ View With Layout
             }
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [MemberData(nameof(RazorViewEngine_UsesExpandersForLayoutsData))]
         public async Task RazorViewEngine_UsesExpandersForLayouts(string value, string expected)
         {
@@ -323,7 +340,9 @@ View With Layout
             Assert.Equal(expected, body.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ViewStartsCanUseDirectivesInjectedFromParentGlobals()
         {
             // Arrange
@@ -341,7 +360,9 @@ View With Layout
             Assert.Equal(expected, body.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ViewComponentsExecuteLayout()
         {
             // Arrange
@@ -362,7 +383,9 @@ Component With Layout</component-body>";
             Assert.Equal(expected, body.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ViewComponentsDoNotExecuteViewStarts()
         {
             // Arrange
@@ -377,7 +400,9 @@ Component With Layout</component-body>";
             Assert.Equal(expected, body.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // https://github.com/aspnet/Mvc/issues/2670
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task PartialDoNotExecuteViewStarts()
         {
             // Arrange
@@ -392,7 +417,9 @@ Component With Layout</component-body>";
             Assert.Equal(expected, body.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task PartialsRenderedViaRenderPartialAsync_CanRenderLayouts()
         {
             // Arrange
@@ -411,7 +438,9 @@ Partial that specifies Layout
             Assert.Equal(expected, body.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task PartialsRenderedViaPartialAsync_CanRenderLayouts()
         {
             // Arrange
@@ -431,7 +460,9 @@ Partial that does not specify Layout
             Assert.Equal(expected, body.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task RazorView_SetsViewPathAndExecutingPagePath()
         {
             // Arrange

@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using RazorWebSite;
 using Xunit;
@@ -17,7 +18,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         private readonly Action<IApplicationBuilder> _app = new Startup().Configure;
         private readonly Action<IServiceCollection> _configureServices = new Startup().ConfigureServices;
 
-        [Theory]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("LayoutSpecifiedWithPartialPathInViewStart")]
         [InlineData("LayoutSpecifiedWithPartialPathInViewStart_ForViewSpecifiedWithAppRelativePath")]
         [InlineData("LayoutSpecifiedWithPartialPathInViewStart_ForViewSpecifiedWithPartialName")]
@@ -38,7 +41,9 @@ _ViewStart that specifies partial Layout
             Assert.Equal(expected, body.Trim());
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("LayoutSpecifiedWithPartialPathInPage")]
         [InlineData("LayoutSpecifiedWithPartialPathInPageWithPartialPath")]
         [InlineData("LayoutSpecifiedWithPartialPathInPageWithAppRelativePath")]
@@ -59,7 +64,9 @@ Layout specified in page
             Assert.Equal(expected, body.Trim());
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("LayoutSpecifiedWithNonPartialPath")]
         [InlineData("LayoutSpecifiedWithNonPartialPathWithExtension")]
         public async Task NonPartialLayoutPaths_GetResolvedByViewEngine(string actionName)
@@ -78,7 +85,9 @@ Page With Non Partial Layout
             Assert.Equal(expected, body.Trim());
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("ViewWithPartial_SpecifiedWithPartialName")]
         [InlineData("ViewWithPartial_SpecifiedWithAbsoluteName")]
         [InlineData("ViewWithPartial_SpecifiedWithAbsoluteNameAndExtension")]

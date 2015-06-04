@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Http.Internal;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Net.Http.Headers;
 using Moq;
 using Newtonsoft.Json;
@@ -145,7 +146,9 @@ namespace Microsoft.AspNet.Mvc.Core.Test.Formatters
             }
         }
 
-        [Theory]
+        [ConditionalTheory]
+        // PhysicalFileProvider does not handle *nix system file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [MemberData(nameof(WriteCorrectCharacterEncoding))]
         public async Task WriteToStreamAsync_UsesCorrectCharacterEncoding(
             string content,

@@ -46,7 +46,7 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             // Assert
             Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
 
-            Assert.Equal(expected, response.Headers.Location.ToString());
+            Assert.Equal(new Uri(expected), response.Headers.Location);
         }
 
         [Fact]

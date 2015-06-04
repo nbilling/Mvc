@@ -2,13 +2,16 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using Microsoft.AspNet.Razor.Chunks;
+using Microsoft.AspNet.Testing.xunit;
 using Xunit;
 
 namespace Microsoft.AspNet.Mvc.Razor.Directives
 {
     public class ChunkInheritanceUtilityTest
     {
-        [Fact]
+        [ConditionalTheory]
+        // FileWatcher does not hand *nix file paths.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public void GetInheritedChunks_ReadsChunksFromGlobalFilesInPath()
         {
             // Arrange

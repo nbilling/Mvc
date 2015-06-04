@@ -15,7 +15,7 @@ namespace FiltersWebSite
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (context.ActionDescriptor.DisplayName == "FiltersWebSite.ActionFilterController.GetHelloWorld")
+            if (context.ActionDescriptor.DisplayName == "FiltersWebSite.SampleActionFilterController.GetHelloWorld")
             {
                 (context.ActionArguments["fromGlobalActionFilter"] as List<ContentResult>).
                     Add(Helpers.GetContentResult(context.Result, "Action Filter - OnActionExecuting"));

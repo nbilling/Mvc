@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using ErrorPageMiddlewareWebSite;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing;
 using Microsoft.Framework.DependencyInjection;
 using Xunit;
 
@@ -62,7 +63,14 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
             Assert.Equal(expectedMediaType, response.Content.Headers.ContentType);
             var content = await response.Content.ReadAsStringAsync();
-            Assert.Contains(@"Views\ErrorFromViewImports\_ViewImports.cshtml", content);
+            if (TestPlatformHelper.IsMono)
+            {
+                Assert.Contains("Views/ErrorFromViewImports/_ViewImports.cshtml", content);
+            }
+            else
+            {
+                Assert.Contains(@"Views\ErrorFromViewImports\_ViewImports.cshtml", content);
+            }
             Assert.Contains(expectedMessage, content);
         }
     }

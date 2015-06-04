@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Mvc.ModelBinding;
 using Microsoft.AspNet.Mvc.Xml;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Newtonsoft.Json;
 using Xunit;
@@ -727,7 +728,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal(typeof(string).FullName, s.Type);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // https://github.com/aspnet/Mvc/issues/2670
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ApiExplorer_ParametersSimpleModel()
         {
             // Arrange

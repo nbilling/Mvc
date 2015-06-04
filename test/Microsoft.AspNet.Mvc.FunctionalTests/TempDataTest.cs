@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Xunit;
@@ -53,7 +54,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task ViewRendersTempData()
         {
             // Arrange
@@ -74,7 +77,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal("Foo", body);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/21
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task Redirect_RetainsTempData_EvenIfAccessed()
         {
             // Arrange
@@ -142,7 +147,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal("Foo", body);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/21
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task TempData_ValidTypes_RoundTripProperly()
         {
             // Arrange

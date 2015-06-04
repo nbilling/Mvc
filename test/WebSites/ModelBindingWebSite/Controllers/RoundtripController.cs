@@ -47,7 +47,7 @@ namespace ModelBindingWebSite.Controllers
             return PersonHelper.NameFor(p => p.Name);
         }
 
-        public string GetPersonParentAge()
+        public string GetPersonParentAgeTest()
         {
             return PersonHelper.NameFor(p => p.Parent.Age);
         }

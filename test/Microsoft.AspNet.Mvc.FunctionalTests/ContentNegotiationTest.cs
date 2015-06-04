@@ -56,7 +56,7 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             // Assert
             Assert.Equal(expectedContentType, response.Content.Headers.ContentType);
             var body = await response.Content.ReadAsStringAsync();
-            Assert.Equal(expectedBody, body);
+            Assert.Equal(expectedBody, body.Replace(Environment.NewLine, "\r\n"));
         }
 
         [Fact]

@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
+using Microsoft.AspNet.Testing;
 using Microsoft.AspNet.WebUtilities;
 using Microsoft.Framework.DependencyInjection;
 using Newtonsoft.Json;
@@ -91,7 +92,14 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
 
             //Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("The field Id must be between 1 and 2000.," +
+            // Mono issue - https://github.com/aspnet/External/issues/19
+            Assert.Equal(
+                TestPlatformHelper.IsMono ?
+                "The field Id must be between 1 and 2000.," +
+                "The field Name must be a string or array type with a minimum length of '5'.," +
+                "StringLengthAttribute_ValidationErrorIncludingMinimum," +
+                "The field Designation must match the regular expression [0-9a-zA-Z]*." :
+                "The field Id must be between 1 and 2000.," +
                 "The field Name must be a string or array type with a minimum length of '5'.," +
                 "The field Alias must be a string with a minimum length of 3 and a maximum length of 15.," +
                 "The field Designation must match the regular expression '[0-9a-zA-Z]*'.",

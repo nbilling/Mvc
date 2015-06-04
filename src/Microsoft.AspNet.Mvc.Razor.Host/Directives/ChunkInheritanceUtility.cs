@@ -64,7 +64,7 @@ namespace Microsoft.AspNet.Mvc.Razor.Directives
                         templateEngine,
                         fileInfo,
                         viewImportsPath));
-
+                
                 if (chunkTree != null)
                 {
                     inheritedChunkTrees.Add(chunkTree);

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Mvc.Xml;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Xunit;
 
@@ -25,7 +26,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         private readonly Action<IApplicationBuilder> _app = new MvcSample.Web.Startup().Configure;
         private readonly Func<IServiceCollection, IServiceProvider> _configureServices = new MvcSample.Web.Startup().ConfigureServices;
 
-        [Theory]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         [InlineData("")]                        // Shared/MyView.cshtml
         [InlineData("/")]                       // Shared/MyView.cshtml
         [InlineData("/Home/Index")]             // Shared/MyView.cshtml
@@ -81,7 +84,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal(expectedOutput, await response.Content.ReadAsStringAsync());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // Mono issue - https://github.com/aspnet/External/issues/2
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task FormUrlEncoded_Index_ReturnSuccess()
         {
             // Arrange

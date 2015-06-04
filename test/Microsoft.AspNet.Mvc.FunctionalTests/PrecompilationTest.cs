@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.AspNet.Mvc.Razor.Precompilation;
+using Microsoft.AspNet.Testing.xunit;
 using Microsoft.Framework.DependencyInjection;
 using Microsoft.Framework.Runtime;
 using PrecompilationWebSite;
@@ -24,7 +25,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         private readonly Action<IApplicationBuilder> _app = new Startup().Configure;
         private readonly Action<IServiceCollection> _configureServices = new Startup().ConfigureServices;
 
-        [Fact]
+        [ConditionalTheory]
+        // This is going to change. Hence skipping for now.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task PrecompiledView_RendersCorrectly()
         {
             // Arrange
@@ -163,7 +166,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             }
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // This is going to change. Hence skipping for now.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task PrecompiledView_UsesCompilationOptionsFromApplication()
         {
             // Arrange
@@ -187,7 +192,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.StartsWith(expected, responseContent.Trim());
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // This is going to change. Hence skipping for now.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task DeletingPrecompiledGlobalFile_PriorToFirstRequestToAView_CausesViewToBeRecompiled()
         {
             // Arrange
@@ -231,7 +238,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             }
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // This is going to change. Hence skipping for now.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task TagHelpersFromTheApplication_CanBeAdded()
         {
             // Arrange
@@ -253,7 +262,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal(expected, responseLines[1]);
         }
 
-        [Fact]
+        [ConditionalTheory]
+        // This is going to change. Hence skipping for now.
+        [FrameworkSkipCondition(RuntimeFrameworks.Mono)]
         public async Task TagHelpersFromTheApplication_CanBeRemoved()
         {
             // Arrange
