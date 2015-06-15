@@ -24,7 +24,7 @@ namespace Microsoft.AspNet.Mvc.Localization
         /// Creates a new <see cref="ViewLocalizer"/>.
         /// </summary>
         /// <param name="localizerFactory">The <see cref="IHtmlLocalizerFactory"/>.</param>
-        /// <param name="applizationEnvironment">The <see cref="IApplicationEnvironment"/>.</param>
+        /// <param name="applicationEnvironment">The <see cref="IApplicationEnvironment"/>.</param>
         public ViewLocalizer(
             [NotNull] IHtmlLocalizerFactory localizerFactory,
             [NotNull] IApplicationEnvironment applicationEnvironment)

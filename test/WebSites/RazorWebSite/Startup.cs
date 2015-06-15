@@ -38,8 +38,6 @@ namespace RazorWebSite
         {
             app.UseRequestLocalization();
 
-            app.UseRequestLocalization();
-
             // Add MVC to the request pipeline
             app.UseMvcWithDefaultRoute();
         }

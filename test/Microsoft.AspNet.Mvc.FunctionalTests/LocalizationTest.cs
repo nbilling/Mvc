@@ -85,7 +85,7 @@ mypartial
 Hello there!!
 Learn More";
 
-                //yield return new[] {"en-GB", expected1 };
+                yield return new[] {"en-GB", expected1 };
 
                 var expected2 =
  @"Mon application ASP.NET
@@ -116,7 +116,6 @@ apprendre Encore Plus";
                 WriteResourceFile("Views.Shared._LocalizationLayout.cshtml." + value + ".resx");
             }
 
-            System.Diagnostics.Debugger.Launch();
             // Act
             var body = await client.GetStringAsync("http://localhost/Home/Locpage");
 

@@ -1,5 +1,5 @@
 ﻿{
-  "description": "The Razor view engine for ASP.NET MVC.",
+  "description": "Contains the localizers for ASP.NET MVC.",
   "version": "6.0.0-*",
   "compilationOptions": {
     "warningsAsErrors": false
@@ -8,27 +8,13 @@
     "Microsoft.AspNet.Localization": "1.0.0-*",
     "Microsoft.AspNet.Mvc.Common": { "version": "6.0.0-*", "type": "build" },
     "Microsoft.AspNet.Mvc": "6.0.0-*",
-    "Microsoft.AspNet.PageExecutionInstrumentation.Interfaces": "1.0.0-*",
     "Microsoft.Framework.Localization": "1.0.0-*",
     "Microsoft.Framework.NotNullAttribute.Sources": { "version": "1.0.0-*", "type": "build" },
-    "Microsoft.Framework.PropertyActivator.Sources": { "version": "1.0.0-*", "type": "build" },
     "Microsoft.Framework.PropertyHelper.Sources": { "version": "1.0.0-*", "type": "build" }
   },
   "frameworks": {
-    "dnx451": {
-      "frameworkAssemblies": {
-        "System.Collections": "",
-        "System.IO": "",
-        "System.Runtime": "",
-        "System.Text.Encoding": "",
-        "System.Threading.Tasks": ""
-      }
-    },
-    "dnxcore50": {
-      "dependencies": {
-        "System.Threading.Tasks.Parallel": "4.0.0-beta-*"
-      }
-    }
+    "dnx451": {},
+    "dnxcore50": {}
   },
   "exclude": [
     "wwwroot",

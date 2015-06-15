@@ -36,7 +36,7 @@ namespace Microsoft.AspNet.Mvc.Localization
         /// <summary>
         /// The name of the string resource.
         /// </summary>
-        public string Key { get; private set; }
+        public string Key { get; }
 
         /// <summary>
         /// The string resource.

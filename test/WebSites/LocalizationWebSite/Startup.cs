@@ -18,10 +18,7 @@ namespace LocalizationWebSite
 
             // Adding TestStringLocalizerFactory since ResourceStringLocalizerFactory uses ResourceManager. DNX does
             // not support getting non-enu resources from ResourceManager yet.
-            services.Add(new ServiceDescriptor(
-                typeof(IStringLocalizerFactory),
-                typeof(TestStringLocalizerFactory),
-                ServiceLifetime.Singleton));
+            services.AddSingleton<IStringLocalizerFactory,TestStringLocalizerFactory>();
         }
 
         public void Configure(IApplicationBuilder app)

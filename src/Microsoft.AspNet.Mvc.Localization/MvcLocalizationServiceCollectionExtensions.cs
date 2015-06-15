@@ -9,7 +9,7 @@ using Microsoft.Framework.WebEncoders;
 
 namespace Microsoft.Framework.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class MvcLocalizationServiceCollectionExtensions
     {
         /// <summary>
         /// Adds Mvc localization to the application.
@@ -36,12 +36,12 @@ namespace Microsoft.Framework.DependencyInjection
                 options.ViewLocationExpanders.Add(new LanguageViewLocationExpander(option));
             });
 
-            services.AddSingleton<IHtmlLocalizerFactory, HtmlLocalizerFactory>();
-            services.AddTransient(typeof(IHtmlLocalizer<>), typeof(HtmlLocalizer<>));
-            services.AddTransient(typeof(IViewLocalizer), typeof(ViewLocalizer));
+            services.TryAdd(ServiceDescriptor.Singleton<IHtmlLocalizerFactory, HtmlLocalizerFactory>());
+            services.TryAdd(ServiceDescriptor.Transient(typeof(IHtmlLocalizer<>), typeof(HtmlLocalizer<>))); 
+            services.TryAdd(ServiceDescriptor.Transient<IViewLocalizer,ViewLocalizer>());
             if (!services.Any(sd => sd.ServiceType == typeof(IHtmlEncoder)))
             {
-                services.AddInstance<IHtmlEncoder>(HtmlEncoder.Default);
+                services.TryAdd(ServiceDescriptor.Instance<IHtmlEncoder>(HtmlEncoder.Default));
             }
             return services.AddLocalization();
         }
