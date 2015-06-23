@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Linq;
+using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Localization;
 using Microsoft.AspNet.Mvc.Razor;
 using Microsoft.Framework.Internal;
@@ -16,9 +17,9 @@ namespace Microsoft.Framework.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static void AddMvcLocalization([NotNull] this IServiceCollection services)
+        public static IServiceCollection AddMvcLocalization([NotNull] this IServiceCollection services)
         {
-            AddMvcLocalization(services, LanguageViewLocationExpanderOption.Suffix);
+            return AddMvcLocalization(services, LanguageViewLocationExpanderOption.Suffix);
         }
 
         /// <summary>
@@ -27,14 +28,16 @@ namespace Microsoft.Framework.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="option">The view format for localized views.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static void AddMvcLocalization(
+        public static IServiceCollection AddMvcLocalization(
             [NotNull] this IServiceCollection services,
             LanguageViewLocationExpanderOption option)
         {
-            services.ConfigureRazorViewEngine(options =>
-            {
-                options.ViewLocationExpanders.Add(new LanguageViewLocationExpander(option));
-            });
+            services.Configure<RazorViewEngineOptions>(
+                options =>
+                {
+                    options.ViewLocationExpanders.Add(new LanguageViewLocationExpander(option));
+                },
+                DefaultOrder.DefaultFrameworkSortOrder);
 
             services.TryAdd(ServiceDescriptor.Transient(typeof(IHtmlLocalizer<>), typeof(HtmlLocalizer<>))); 
             services.TryAdd(ServiceDescriptor.Transient<IHtmlLocalizer, ViewLocalizer>());
@@ -42,7 +45,7 @@ namespace Microsoft.Framework.DependencyInjection
             {
                 services.TryAdd(ServiceDescriptor.Instance<IHtmlEncoder>(HtmlEncoder.Default));
             }
-            services.AddLocalization();
+            return services.AddLocalization();
         }
     }
 }

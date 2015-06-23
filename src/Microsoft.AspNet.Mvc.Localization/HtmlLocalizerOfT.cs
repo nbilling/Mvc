@@ -1,9 +1,6 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
 using Microsoft.Framework.Internal;
 using Microsoft.Framework.Localization;
 using Microsoft.Framework.WebEncoders;
@@ -11,13 +8,13 @@ using Microsoft.Framework.WebEncoders;
 namespace Microsoft.AspNet.Mvc.Localization
 {
     /// <summary>
-    /// This is an <see cref="IHtmlLocalizer"/> that provides strings for <see cref="TResourceSource"/>.
+    /// This is an <see cref="IHtmlLocalizer"/> that provides strings for <see cref="TResource"/>.
     /// </summary>
-    /// <typeparam name="TResourceSource">The <see cref="System.Type"/> to provide strings for.</typeparam>
-    public class HtmlLocalizer<TResourceSource> : HtmlLocalizer, IHtmlLocalizer<TResourceSource>
+    /// <typeparam name = "TResource"> The <see cref="System.Type"/> to scope the resource names.</typeparam>
+    public class HtmlLocalizer<TResource> : HtmlLocalizer, IHtmlLocalizer<TResource>
     {
         /// <summary>
-        /// Creates a new <see cref="HtmlLocalizer" for <see cref="TResourceSource"/>.
+        /// Creates a new <see cref="HtmlLocalizer" for <see cref="TResource"/>.
         /// </summary>
         /// <param name="factory">The <see cref="IStringLocalizerFactory"/>.</param>
         /// <param name="encoder">The <see cref="IHtmlEncoder"/>.</param>
@@ -26,7 +23,7 @@ namespace Microsoft.AspNet.Mvc.Localization
             [NotNull]IHtmlEncoder encoder) 
             : base(factory, encoder)
         {
-            CreateStringLocalizer(typeof(TResourceSource));
+            CreateStringLocalizer(typeof(TResource));
         }
     }
 }

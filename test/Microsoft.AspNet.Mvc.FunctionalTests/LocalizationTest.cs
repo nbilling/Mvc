@@ -92,7 +92,14 @@ Learn More";
 
 Bonjour!
 apprendre Encore Plus";
+
+//Coreclr just reads enu resources. Hence the conditional if
+#if DNX451
                 yield return new[] { "fr", expected2 };
+#else
+                yield return new[] {"fr", expected1 };
+#endif
+
             }
         }
 
