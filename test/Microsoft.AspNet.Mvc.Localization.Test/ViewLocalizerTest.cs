@@ -5,6 +5,7 @@ using System.Globalization;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Framework.Localization;
 using Microsoft.Framework.Runtime;
+using Microsoft.Framework.WebEncoders.Testing;
 using Moq;
 using Xunit;
 
@@ -21,13 +22,17 @@ namespace Microsoft.AspNet.Mvc.Localization.Test
 
             var localizedString = new LocalizedString("Hello", "Bonjour");
 
-            var htmlLocalizer = new Mock<IHtmlLocalizer>();
-            htmlLocalizer.Setup(h => h["Hello"]).Returns(localizedString);
+            var stringLocalizer = new Mock<IStringLocalizer>();
+            stringLocalizer.Setup(s => s["Hello"]).Returns(localizedString);
 
-            var htmlLocalizerFactory = new Mock<IHtmlLocalizerFactory>();
-            htmlLocalizerFactory.Setup(h => h.Create("TestApplication.example", "TestApplication")).Returns(htmlLocalizer.Object);
+            var stringLocalizerFactory = new Mock<IStringLocalizerFactory>();
+            stringLocalizerFactory.Setup(s => s.Create("TestApplication.example", "TestApplication"))
+                .Returns(stringLocalizer.Object);
 
-            var viewLocalizer = new ViewLocalizer(htmlLocalizerFactory.Object, applicationEnvironment.Object);
+            var viewLocalizer = new ViewLocalizer(
+                stringLocalizerFactory.Object,
+                new CommonTestEncoder(),
+                applicationEnvironment.Object);
 
             var view = new Mock<IView>();
             view.Setup(v => v.Path).Returns("example");
@@ -52,14 +57,17 @@ namespace Microsoft.AspNet.Mvc.Localization.Test
 
             var localizedString = new LocalizedString("Hello", "Bonjour test");
 
-            var htmlLocalizer = new Mock<IHtmlLocalizer>();
-            htmlLocalizer.Setup(h => h["Hello", "test"]).Returns(localizedString);
+            var stringLocalizer = new Mock<IStringLocalizer>();
+            stringLocalizer.Setup(s => s["Hello", "test"]).Returns(localizedString);
+            var stringLocalizerFactory = new Mock<IStringLocalizerFactory>();
 
-            var htmlLocalizerFactory = new Mock<IHtmlLocalizerFactory>();
-            htmlLocalizerFactory.Setup(
-                h => h.Create("TestApplication.example", "TestApplication")).Returns(htmlLocalizer.Object);
+            stringLocalizerFactory.Setup(s => s.Create("TestApplication.example", "TestApplication"))
+                .Returns(stringLocalizer.Object);
 
-            var viewLocalizer = new ViewLocalizer(htmlLocalizerFactory.Object, applicationEnvironment.Object);
+            var viewLocalizer = new ViewLocalizer(
+                stringLocalizerFactory.Object,
+                new CommonTestEncoder(),
+                applicationEnvironment.Object);
 
             var view = new Mock<IView>();
             view.Setup(v => v.Path).Returns("example");
@@ -73,37 +81,6 @@ namespace Microsoft.AspNet.Mvc.Localization.Test
 
             // Assert
             Assert.Equal(localizedString, actualLocalizedString);
-        }
-
-        [Fact]
-        public void ViewLocalizer_GetCulture()
-        {
-            // Arrange
-            var cultureInfo = new CultureInfo("en-GB");
-            var htmlLocalizer = new Mock<IHtmlLocalizer>();
-            htmlLocalizer.Setup(h => h.WithCulture(cultureInfo)).Returns(htmlLocalizer.Object);
-
-            var applicationEnvironment = new Mock<IApplicationEnvironment>();
-            applicationEnvironment.Setup(a => a.ApplicationName).Returns("TestApplication");
-
-            var htmlLocalizerFactory = new Mock<IHtmlLocalizerFactory>();
-            htmlLocalizerFactory.Setup(
-                h => h.Create("TestApplication.example", "TestApplication")).Returns(htmlLocalizer.Object);
-
-            var viewLocalizer = new ViewLocalizer(htmlLocalizerFactory.Object, applicationEnvironment.Object);
-
-            var view = new Mock<IView>();
-            view.Setup(v => v.Path).Returns("example");
-            var viewContext = new ViewContext();
-            viewContext.View = view.Object;
-
-            viewLocalizer.Contextualize(viewContext);
-
-            // Act
-            var actualHtmlLocalizer = viewLocalizer.WithCulture(cultureInfo);
-
-            // Assert
-            Assert.Equal(htmlLocalizer.Object, actualHtmlLocalizer);
         }
     }
 }

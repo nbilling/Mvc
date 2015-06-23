@@ -16,9 +16,9 @@ namespace Microsoft.Framework.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddMvcLocalization([NotNull] this IServiceCollection services)
+        public static void AddMvcLocalization([NotNull] this IServiceCollection services)
         {
-            return AddMvcLocalization(services, LanguageViewLocationExpanderOption.Suffix);
+            AddMvcLocalization(services, LanguageViewLocationExpanderOption.Suffix);
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Microsoft.Framework.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="option">The view format for localized views.</param>
         /// <returns>The <see cref="IServiceCollection"/>.</returns>
-        public static IServiceCollection AddMvcLocalization(
+        public static void AddMvcLocalization(
             [NotNull] this IServiceCollection services,
             LanguageViewLocationExpanderOption option)
         {
@@ -36,14 +36,13 @@ namespace Microsoft.Framework.DependencyInjection
                 options.ViewLocationExpanders.Add(new LanguageViewLocationExpander(option));
             });
 
-            services.TryAdd(ServiceDescriptor.Singleton<IHtmlLocalizerFactory, HtmlLocalizerFactory>());
             services.TryAdd(ServiceDescriptor.Transient(typeof(IHtmlLocalizer<>), typeof(HtmlLocalizer<>))); 
-            services.TryAdd(ServiceDescriptor.Transient<IViewLocalizer,ViewLocalizer>());
+            services.TryAdd(ServiceDescriptor.Transient<IHtmlLocalizer, ViewLocalizer>());
             if (!services.Any(sd => sd.ServiceType == typeof(IHtmlEncoder)))
             {
                 services.TryAdd(ServiceDescriptor.Instance<IHtmlEncoder>(HtmlEncoder.Default));
             }
-            return services.AddLocalization();
+            services.AddLocalization();
         }
     }
 }

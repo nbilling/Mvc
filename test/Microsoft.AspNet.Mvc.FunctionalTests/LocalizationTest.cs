@@ -128,34 +128,37 @@ apprendre Encore Plus";
             var resxFilePath = Directory.GetParent(Directory.GetCurrentDirectory()) + "\\WebSites\\" + SiteName + 
                 "\\Resources\\" + resxFileName;
 
-            using (var fs = File.OpenRead(resxFilePath))
+            if (File.Exists(resxFilePath))
             {
-                var document = XDocument.Load(fs);
-
-                var binDirPath = Path.Combine(Path.GetDirectoryName(resxFilePath), "bin");
-                if (!Directory.Exists(binDirPath))
+                using (var fs = File.OpenRead(resxFilePath))
                 {
-                    Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(resxFilePath), "bin"));
-                }
+                    var document = XDocument.Load(fs);
 
-                // Put in "bin" sub-folder of resx file
-                var targetPath = Path.Combine(
-                    binDirPath,
-                    Path.ChangeExtension(Path.GetFileName(resxFilePath), ".resources"));
-
-                using (var targetStream = File.Create(targetPath))
-                {
-                    var rw = new ResourceWriter(targetStream);
-
-                    foreach (var e in document.Root.Elements("data"))
+                    var binDirPath = Path.Combine(Path.GetDirectoryName(resxFilePath), "bin");
+                    if (!Directory.Exists(binDirPath))
                     {
-                        var name = e.Attribute("name").Value;
-                        var value = e.Element("value").Value;
-
-                        rw.AddResource(name, value);
+                        Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(resxFilePath), "bin"));
                     }
 
-                    rw.Generate();
+                    // Put in "bin" sub-folder of resx file
+                    var targetPath = Path.Combine(
+                        binDirPath,
+                        Path.ChangeExtension(Path.GetFileName(resxFilePath), ".resources"));
+
+                    using (var targetStream = File.Create(targetPath))
+                    {
+                        var rw = new ResourceWriter(targetStream);
+
+                        foreach (var e in document.Root.Elements("data"))
+                        {
+                            var name = e.Attribute("name").Value;
+                            var value = e.Element("value").Value;
+
+                            rw.AddResource(name, value);
+                        }
+
+                        rw.Generate();
+                    }
                 }
             }
         }

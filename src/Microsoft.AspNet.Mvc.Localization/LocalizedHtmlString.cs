@@ -16,7 +16,7 @@ namespace Microsoft.AspNet.Mvc.Localization
         /// <param name="key">The name of the string resource.</param>
         /// <param name="value">The string resource.</param>
         public LocalizedHtmlString(string key, string value)
-            : this(key, value, resourceNotFound: false)
+            : this(key, value, isResourceNotFound: false)
         {
 
         }
@@ -26,11 +26,12 @@ namespace Microsoft.AspNet.Mvc.Localization
         /// </summary>
         /// <param name="key">The name of the string resource.</param>
         /// <param name="value">The string resource.</param>
-        /// <param name="resourceNotFound">A flag that indicates if the resource is not found.</param>
-        public LocalizedHtmlString(string key, string value, bool resourceNotFound)
+        /// <param name="isResourceNotFound">A flag that indicates if the resource is not found.</param>
+        public LocalizedHtmlString(string key, string value, bool isResourceNotFound)
             : base(value)
         {
             Key = key;
+            IsResourceNotFound = isResourceNotFound;
         }
 
         /// <summary>
@@ -46,6 +47,6 @@ namespace Microsoft.AspNet.Mvc.Localization
         /// <summary>
         /// Gets a flag that indicates if the resource is not found.
         /// </summary>
-        public bool ResourceNotFound { get; private set; }
+        public bool IsResourceNotFound { get; }
     }
 }

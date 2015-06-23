@@ -9,6 +9,5 @@ namespace Microsoft.AspNet.Mvc.Localization
     /// <typeparam name="TResourceSource">The <see cref="System.Type"/> to provide strings for.</typeparam>
     public interface IHtmlLocalizer<TResourceSource> : IHtmlLocalizer
     {
-
     }
 }
