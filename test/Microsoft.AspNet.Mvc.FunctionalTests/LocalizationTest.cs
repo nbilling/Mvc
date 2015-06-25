@@ -79,25 +79,34 @@ mypartial
         {
             get
             {
+                // Dnx does not support reading resources yet. Coreclr return null value while trying to read resources.
+                // https://github.com/aspnet/Mvc/issues/2747
+#if DNX451
                 var expected1 =
- @"My ASP.NET Application
+@"My ASP.NET Application
 
 Hello there!!
-Learn More";
+Learn More
+Hi John      ! You are in 2015 year and today is Thursday";
 
                 yield return new[] {"en-GB", expected1 };
 
                 var expected2 =
- @"Mon application ASP.NET
+@"Mon application ASP.NET
 
 Bonjour!
-apprendre Encore Plus";
-
-//Coreclr just reads enu resources. Hence the conditional if
-#if DNX451
+apprendre Encore Plus
+Salut John      ! Vous êtes en 2015 an aujourd'hui est Thursday";
                 yield return new[] { "fr", expected2 };
 #else
-                yield return new[] {"fr", expected1 };
+                var expectedCoreClr =
+@"My ASP.NET Application
+
+Hello there!!
+Learn More
+Hi";
+                yield return new[] {"en-GB", expectedCoreClr };
+                yield return new[] {"fr", expectedCoreClr };
 #endif
 
             }
@@ -105,7 +114,7 @@ apprendre Encore Plus";
 
         [Theory]
         [MemberData(nameof(LocalizationResourceData))]
-        public async Task Localization_Resources(string value, string expected)
+        public async Task Localization_Resources_ReturnExpectedValues(string value, string expected)
         {
             // Arrange
             var server = TestHelper.CreateServer(_app, SiteName, _configureServices);
@@ -119,9 +128,9 @@ apprendre Encore Plus";
             {
                 // Manually generating .resources file since we don't autogenerate .resources file yet. 
                 WriteResourceFile("HomeController." + value + ".resx");
-                WriteResourceFile("Views.Home.Locpage.cshtml." + value + ".resx");
                 WriteResourceFile("Views.Shared._LocalizationLayout.cshtml." + value + ".resx");
             }
+            WriteResourceFile("Views.Home.Locpage.cshtml." + value + ".resx");
 
             // Act
             var body = await client.GetStringAsync("http://localhost/Home/Locpage");

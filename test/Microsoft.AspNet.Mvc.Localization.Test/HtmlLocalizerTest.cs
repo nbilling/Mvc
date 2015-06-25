@@ -11,7 +11,7 @@ namespace Microsoft.AspNet.Mvc.Localization.Test
     public class HtmlLocalizerTest
     {
         [Fact]
-        public void HtmlLocalizer_GetLocalizedString()
+        public void HtmlLocalizer_UseIndexer_ReturnsLocalizedString()
         {
             // Arrange
             var localizedString = new LocalizedString("Hello", "Bonjour");
@@ -28,7 +28,7 @@ namespace Microsoft.AspNet.Mvc.Localization.Test
         }
 
         [Fact]
-        public void HtmlLocalizer_GetLocalizedStringWithArguments()
+        public void HtmlLocalizer_UseIndexerWithArguments_ReturnsLocalizedString()
         {
             // Arrange
             var localizedString = new LocalizedString("Hello", "Bonjour test");
@@ -46,7 +46,7 @@ namespace Microsoft.AspNet.Mvc.Localization.Test
         }
 
         [Fact]
-        public void HtmlLocalizerOfT_GetLocalizedString()
+        public void HtmlLocalizerOfT_UseIndexer_ReturnsLocalizedString()
         {
             // Arrange
             var localizedString = new LocalizedString("Hello", "Bonjour");
@@ -69,7 +69,7 @@ namespace Microsoft.AspNet.Mvc.Localization.Test
         }
 
         [Fact]
-        public void HtmlLocalizerOfT_GetLocalizedStringWithArguments()
+        public void HtmlLocalizerOfT_UseIndexerWithArguments_ReturnsLocalizedString()
         {
             // Arrange
             var localizedString = new LocalizedString("Hello", "Bonjour test");

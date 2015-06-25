@@ -18,7 +18,6 @@ namespace Microsoft.AspNet.Mvc.Localization
         public LocalizedHtmlString(string key, string value)
             : this(key, value, isResourceNotFound: false)
         {
-
         }
 
         /// <summary>

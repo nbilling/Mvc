@@ -118,15 +118,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Hello there!!" xml:space="preserve">
-    <value>Bonjour!</value>
+    <value>Hello there!!</value>
   </data>
   <data name="Learn how to build ASP.NET apps that can run anywhere." xml:space="preserve">
-    <value>Apprenez à créer des applications ASP.NET qui peuvent fonctionner ne importe où.</value>
+    <value>Learn how to build ASP.NET apps that can run anywhere.</value>
   </data>
   <data name="Learn More" xml:space="preserve">
-    <value>apprendre Encore Plus</value>
+    <value>Learn More</value>
   </data>
   <data name="Hi" xml:space="preserve">
-    <value>Salut {0,-10}! Vous êtes en {1:yyyy} an aujourd'hui est {2}</value>
+    <value>Hi {0,-10}! You are in {1:yyyy} year and today is {2}</value>
   </data>
 </root>

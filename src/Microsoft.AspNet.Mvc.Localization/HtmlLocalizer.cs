@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Text;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Framework.Internal;
 using Microsoft.Framework.Localization;
@@ -72,15 +73,56 @@ namespace Microsoft.AspNet.Mvc.Localization
         public virtual LocalizedHtmlString Html([NotNull] string key) => ToHtmlString(_localizer.GetString(key));
 
         /// <inheritdoc />
-        public virtual LocalizedHtmlString Html([NotNull] string key, params object[] arguments) =>
-            ToHtmlString(_localizer.GetString(key, EncodeArguments(arguments)));
+        public virtual LocalizedHtmlString Html([NotNull] string key, params object[] arguments)
+        {
+            var stringValue = _localizer[key].Value;
+            var tokens = new List<string>();
+
+            for (int i = 0; i < stringValue.Length; i++)
+            {
+                if (stringValue[i] == '{')
+                {
+                    StringBuilder myToken = new StringBuilder();
+                    myToken.Append(stringValue[i]);
+                    i++;
+
+                    while (i < stringValue.Length)
+                    {
+                        if (stringValue[i] != '}')
+                        {
+                            if (stringValue[i] == '{')
+                            {
+                                throw new Exception("Malformed resource string");
+                            }
+                            else
+                            {
+                                myToken.Append(stringValue[i]);
+                                i++;
+                            }
+                        }
+                        else
+                        {
+                            myToken.Append(stringValue[i]);
+                            tokens.Add(myToken.ToString());
+                            break;
+                        }
+                    }
+                }
+            }
+            // This call joins all tokens and formats them based on arguments and splits them again into arguments. The
+            // idea here is to encode the formatted arguments. For example if resource value has datetime format as
+            // argument ex: {1:yyyy} we are formatting the argument to right value before encoding.
+            arguments = string.Format(string.Join(",", tokens), arguments).Split(',');
+
+            return ToHtmlString(new LocalizedString(key, string.Format(stringValue, EncodeArguments(arguments))));
+        }
 
         /// <summary>
         /// Creates a new <see cref="IHtmlLocalizer"/> for a specific <see cref="CultureInfo"/>.
         /// </summary>
         /// <param name="culture">The <see cref="CultureInfo"/> to use.</param>
         /// <returns>A culture-specific <see cref="IHtmlLocalizer"/>.</returns>
-        public IHtmlLocalizer WithCulture([NotNull]CultureInfo culture) =>
+        public IHtmlLocalizer WithCulture([NotNull] CultureInfo culture) =>
             new HtmlLocalizer(_localizer.WithCulture(culture), _encoder);
 
         /// <summary>
@@ -98,10 +140,10 @@ namespace Microsoft.AspNet.Mvc.Localization
         protected object[] EncodeArguments(object[] arguments)
         {
             var encodedArguments = new object[arguments.Length];
-            for (var index = 0; index != arguments.Length; ++index)
+            for (var index = 0; index < arguments.Length; ++index)
             {
                 var argument = arguments[index];
-                if (argument is HtmlString)
+                if (argument is HtmlString || argument == null)
                 {
                     encodedArguments[index] = argument;
                 }

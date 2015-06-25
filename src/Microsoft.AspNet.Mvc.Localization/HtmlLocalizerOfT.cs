@@ -8,19 +8,19 @@ using Microsoft.Framework.WebEncoders;
 namespace Microsoft.AspNet.Mvc.Localization
 {
     /// <summary>
-    /// This is an <see cref="IHtmlLocalizer"/> that provides strings for <see cref="TResource"/>.
+    /// This is an <see cref="HtmlLocalizer"/> that provides localized HTML content.
     /// </summary>
     /// <typeparam name = "TResource"> The <see cref="System.Type"/> to scope the resource names.</typeparam>
     public class HtmlLocalizer<TResource> : HtmlLocalizer, IHtmlLocalizer<TResource>
     {
         /// <summary>
-        /// Creates a new <see cref="HtmlLocalizer" for <see cref="TResource"/>.
+        /// Creates a new <see cref="HtmlLocalizer"/>.
         /// </summary>
         /// <param name="factory">The <see cref="IStringLocalizerFactory"/>.</param>
         /// <param name="encoder">The <see cref="IHtmlEncoder"/>.</param>
         public HtmlLocalizer(
             [NotNull] IStringLocalizerFactory factory,
-            [NotNull]IHtmlEncoder encoder) 
+            [NotNull] IHtmlEncoder encoder)
             : base(factory, encoder)
         {
             CreateStringLocalizer(typeof(TResource));
