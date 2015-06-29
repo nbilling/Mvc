@@ -4,6 +4,8 @@
 using Microsoft.Framework.Localization;
 using Microsoft.Framework.WebEncoders.Testing;
 using Moq;
+using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Microsoft.AspNet.Mvc.Localization.Test
@@ -89,6 +91,56 @@ namespace Microsoft.AspNet.Mvc.Localization.Test
 
             // Assert
             Assert.Equal(localizedString, actualLocalizedString);
+        }
+
+        public static IEnumerable<object[]> HtmlData
+        {
+            get
+            {
+                yield return new object[] { "Bonjour {0}", new object[] { "test" }, "Bonjour HtmlEncode[[test]]" };
+                yield return new object[] { "Bonjour {{0}}", new object[] { "{0}" }, "Bonjour HtmlEncode[[{0}]]" };
+                yield return new object[] { "Bonjour {0:x}", new object[] { 10 }, "Bonjour HtmlEncode[[a]]" };
+                yield return new object[] { "Bonjour {{0:x}}", new object[] { 10 }, "Bonjour HtmlEncode[[{0:x}]]" };
+                yield return new object[] { "Bonjour {{{0:x}}}", new object[] { 10 }, "Bonjour HtmlEncode[[{x}]]" };
+                yield return new object[] {
+                    "Bonjour {{{0:x}}} {1:yyyy}",
+                    new object[] { 10, new DateTime(2015, 10, 10) },
+                    "Bonjour HtmlEncode[[{x}]] HtmlEncode[[2015]]"
+                };
+                yield return new object[] {
+                    "Bonjour {{{0:x}}} Bienvenue {{1:yyyy}}",
+                    new object[] { 10, new DateTime(2015, 10, 10) },
+                    "Bonjour HtmlEncode[[{x}]] Bienvenue HtmlEncode[[{1:yyyy}]]"
+                };
+                yield return new object[] {
+                    "Bonjour {0,6} Bienvenue {{1:yyyy}}",
+                    new object[] { 10, new DateTime(2015, 10, 10) },
+                    "Bonjour HtmlEncode[[    10]] Bienvenue HtmlEncode[[{1:yyyy}]]"
+                };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(HtmlData))]
+        public void HtmlLocalizer_HtmlWithArguments_ReturnsLocalizedHtml(
+            string format,
+            object[] arguments,
+            string expectedText)
+        {
+            // Arrange
+            var localizedString = new LocalizedString("Hello", format);
+
+            var stringLocalizer = new Mock<IStringLocalizer>();
+            stringLocalizer.Setup(s => s["Hello"]).Returns(localizedString);
+
+            var htmlLocalizer = new HtmlLocalizer(stringLocalizer.Object, new CommonTestEncoder());
+
+            // Act
+            var localizedHtmlString = htmlLocalizer.Html("Hello", arguments);
+
+            // Assert
+            Assert.NotNull(localizedHtmlString);
+            Assert.Equal(expectedText, localizedHtmlString.Value);
         }
     }
 

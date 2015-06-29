@@ -76,45 +76,8 @@ namespace Microsoft.AspNet.Mvc.Localization
         public virtual LocalizedHtmlString Html([NotNull] string key, params object[] arguments)
         {
             var stringValue = _localizer[key].Value;
-            var tokens = new List<string>();
 
-            for (int i = 0; i < stringValue.Length; i++)
-            {
-                if (stringValue[i] == '{')
-                {
-                    StringBuilder myToken = new StringBuilder();
-                    myToken.Append(stringValue[i]);
-                    i++;
-
-                    while (i < stringValue.Length)
-                    {
-                        if (stringValue[i] != '}')
-                        {
-                            if (stringValue[i] == '{')
-                            {
-                                throw new Exception("Malformed resource string");
-                            }
-                            else
-                            {
-                                myToken.Append(stringValue[i]);
-                                i++;
-                            }
-                        }
-                        else
-                        {
-                            myToken.Append(stringValue[i]);
-                            tokens.Add(myToken.ToString());
-                            break;
-                        }
-                    }
-                }
-            }
-            // This call joins all tokens and formats them based on arguments and splits them again into arguments. The
-            // idea here is to encode the formatted arguments. For example if resource value has datetime format as
-            // argument ex: {1:yyyy} we are formatting the argument to right value before encoding.
-            arguments = string.Format(string.Join(",", tokens), arguments).Split(',');
-
-            return ToHtmlString(new LocalizedString(key, string.Format(stringValue, EncodeArguments(arguments))));
+            return ToHtmlString(new LocalizedString(key, EncodeArguments(stringValue, arguments)));
         }
 
         /// <summary>
@@ -133,29 +96,6 @@ namespace Microsoft.AspNet.Mvc.Localization
             new LocalizedHtmlString(result.Name, result.Value, result.ResourceNotFound);
 
         /// <summary>
-        /// Encodes the arguments based on the object type.
-        /// </summary>
-        /// <param name="arguments">The array of objects to encode.</param>
-        /// <returns>The encoded object array.</returns>
-        protected object[] EncodeArguments(object[] arguments)
-        {
-            var encodedArguments = new object[arguments.Length];
-            for (var index = 0; index < arguments.Length; ++index)
-            {
-                var argument = arguments[index];
-                if (argument is HtmlString || argument == null)
-                {
-                    encodedArguments[index] = argument;
-                }
-                else
-                {
-                    encodedArguments[index] = _encoder.HtmlEncode(argument.ToString());
-                }
-            }
-            return encodedArguments;
-        }
-
-        /// <summary>
         /// Creates a <see cref="IStringLocalizer"/>.
         /// </summary>
         /// <param name="baseName">The base name of the resource to load strings from.</param>
@@ -170,5 +110,306 @@ namespace Microsoft.AspNet.Mvc.Localization
         /// </summary>
         /// <param name="type">The <see cref="Type"/>.</param>
         protected void CreateStringLocalizer(Type type) => _localizer = _localizerFactory.Create(type);
+
+        /// <summary>
+        /// Encodes the arguments based on the object type.
+        /// </summary>
+        /// <param name="resourceString">The resourceString whose arguments need to be encoded.</param>
+        /// <param name="arguments">The array of objects to encode.</param>
+        /// <returns>The string with encoded arguments.</returns>
+        protected string EncodeArguments([NotNull] string resourceString, [NotNull] object[] arguments)
+        {
+            var position = 0;
+            var length = resourceString.Length;
+            var ch = '\x0';
+            StringBuilder builder = null;
+            var resourceStringBuilder = new StringBuilder();
+
+            while (true)
+            {
+                builder = new StringBuilder();
+
+                var isToken = false;
+                var p = position;
+                var i = position;
+
+                while (position < length)
+                {
+                    ch = resourceString[position];
+
+                    position++;
+                    if (ch == '}')
+                    {
+                        if (position < length && resourceString[position] == '}') // Treat as escape character for }}
+                        {
+                            position++;
+                            if (position < length && resourceString[position] != '{')
+                            {
+                                isToken = false;
+                                builder.Append(ch);
+                                resourceStringBuilder.Append(EncodeArgument(builder.ToString()));
+                                builder = new StringBuilder();
+                            }
+                        }
+                        else
+                        {
+                            FormatError();
+                        }
+                    }
+
+                    if (ch == '{')
+                    {
+                        if (builder == null)
+                        {
+                            builder = new StringBuilder();
+                        }
+                        if (position < length && resourceString[position] == '{') // Treat as escape character for {{
+                        {
+                            isToken = true;
+                            position++;
+                        }
+                        else
+                        {
+                            position--;
+                            break;
+                        }
+                    }
+
+                    if (isToken)
+                    {
+                        builder.Append(ch);
+                    }
+                    else
+                    {
+                        resourceStringBuilder.Append(ch);
+                    }
+                }
+
+                if (position == length)
+                {
+                    if (builder.Length > 0)
+                    {
+                        resourceStringBuilder.Append(EncodeArgument(builder.ToString()));
+                    }
+                    break;
+                }
+                position++;
+                if (position == length || (ch = resourceString[position]) < '0' || ch > '9')
+                {
+                    FormatError();
+                }
+
+                var index = 0;
+                do
+                {
+                    index = index * 10 + ch - '0';
+                    position++;
+                    if (position == length)
+                    {
+                        FormatError();
+                    }
+
+                    ch = resourceString[position];
+                } while (ch >= '0' && ch <= '9' && index < 1000000);
+
+                if (index >= arguments.Length)
+                {
+                    FormatError();
+                }
+
+                while (position < length && (ch = resourceString[position]) == ' ')
+                {
+                    position++;
+                }
+
+                var leftJustify = false;
+                var width = 0;
+
+                if (ch == ',')
+                {
+                    position++;
+                    while (position < length && resourceString[position] == ' ')
+                    {
+                        position++;
+                    }
+
+                    if (position == length)
+                    {
+                        FormatError();
+                    }
+                    ch = resourceString[position];
+                    if (ch == '-')
+                    {
+                        leftJustify = true;
+                        position++;
+                        if (position == length)
+                        {
+                            FormatError();
+                        }
+                        ch = resourceString[position];
+                    }
+                    if (ch < '0' || ch > '9')
+                    {
+                        FormatError();
+                    }
+                    do
+                    {
+                        width = width * 10 + ch - '0';
+                        position++;
+                        if (position == length)
+                        {
+                            FormatError();
+                        }
+
+                        ch = resourceString[position];
+                    } while (ch >= '0' && ch <= '9' && width < 1000000);
+                }
+
+                while (position < length && (ch = resourceString[position]) == ' ')
+                {
+                    position++;
+                }
+
+                var arg = arguments[index];
+                StringBuilder fmt = null;
+
+                if (ch == ':')
+                {
+                    position++;
+                    p = position;
+                    i = position;
+                    while (true)
+                    {
+                        if (position == length)
+                        {
+                            FormatError();
+                        }
+                        ch = resourceString[position];
+                        position++;
+
+                        if (ch == '{')
+                        {
+                            // Treat as escape character for {{
+                            if (position < length && resourceString[position] == '{')
+                            {
+                                position++;
+                            }
+                            else
+                            {
+                                FormatError();
+                            }
+                        }
+                        else if (ch == '}')
+                        {
+                            // Treat as escape character for }}
+                            if (position < length && resourceString[position] == '}')
+                            {
+                                position++;
+                            }
+                            else
+                            {
+                                position--;
+                                break;
+                            }
+                        }
+
+                        if (fmt == null)
+                        {
+                            fmt = new StringBuilder();
+                        }
+                        fmt.Append(ch);
+                    }
+                }
+                if (ch != '}')
+                {
+                    FormatError();
+                }
+
+                string sFmt = null;
+                string s = null;
+
+                if (s == null)
+                {
+                    var formattableArg = arg as IFormattable;
+
+                    if (formattableArg != null)
+                    {
+                        if (sFmt == null && fmt != null)
+                        {
+                            sFmt = fmt.ToString();
+                        }
+
+                        s = formattableArg.ToString(sFmt, null);
+                    }
+                    else if (arg != null)
+                    {
+                        s = arg.ToString();
+                    }
+                }
+
+                if (s == null)
+                {
+                    s = string.Empty;
+                }
+                int pad = width - s.Length;
+                if (!leftJustify && pad > 0)
+                {
+                    builder.Append(' ', pad);
+                }
+
+                builder.Append(s);
+
+                if (leftJustify && pad > 0)
+                {
+                    builder.Append(' ', pad);
+                }
+
+                while (true)
+                {
+                    if (position == length)
+                    {
+                        FormatError();
+                    }
+                    ch = resourceString[position];
+                    position++;
+                    if (ch == '}')
+                    {
+                        if (position < length && resourceString[position] == '}')  // Treat as escape character for }}
+                        {
+                            builder.Append(ch);
+                            position++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                resourceStringBuilder.Append(EncodeArgument(builder.ToString()));
+            }
+
+            return resourceStringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Encodes the argument based on the object type.
+        /// </summary>
+        /// <param name="argument">The object to encode.</param>
+        /// <returns>The encoded object.</returns>
+        protected object EncodeArgument(object argument)
+        {
+            if (argument is HtmlString || argument == null)
+            {
+                return argument;
+            }
+
+            return _encoder.HtmlEncode(argument.ToString());
+        }
+
+        private void FormatError()
+        {
+            throw new FormatException(Resources.InvalidResourceString);
+        }
     }
 }
