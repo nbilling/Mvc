@@ -71,18 +71,17 @@ namespace LocalizationWebSite
         protected string GetStringSafely(string name, CultureInfo culture)
         {
             var resourceValue = string.Empty;
-
 #if DNX451
             var cultureName = (culture ?? CultureInfo.CurrentUICulture).Name;
             var resourceFile = _resourceManager.BaseName.Substring(_resourceManager.BaseName.IndexOf('.') + 1) + "." + cultureName;
             var filePath = _applicationBasePath + "\\Resources\\bin";
+
             if (File.Exists(filePath + "\\" + resourceFile + ".resources"))
             {
                 _resourceManager = ResourceManager.CreateFileBasedResourceManager(resourceFile, filePath, null);
             }
 #endif
             try
-
             {
                 // retrieve the value of the specified key
                 resourceValue = _resourceManager.GetString(name);

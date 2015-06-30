@@ -22,7 +22,7 @@ namespace LocalizationWebSite.Controllers
 
         public IActionResult LocPage()
         {
-            ViewBag.Message = _localizer["Learn More"];
+            ViewData["Message"] = _localizer["Learn More"];
             return View();
         }
     }

@@ -117,7 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InvalidResourceString" xml:space="preserve">
-    <value>The resource string is format is invalid.</value>
+  <data name="NullStringLocalizer" xml:space="preserve">
+    <value>Must call CreateStringLocalizer method before using this property.</value>
+  </data>
+  <data name="NullStringLocalizerFactory" xml:space="preserve">
+    <value>IStringLocalizerFactory is null. Must call other constructor overload to use this property.</value>
   </data>
 </root>

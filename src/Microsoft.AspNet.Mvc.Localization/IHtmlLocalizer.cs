@@ -8,7 +8,8 @@ using Microsoft.Framework.Localization;
 namespace Microsoft.AspNet.Mvc.Localization
 {
     /// <summary>
-    /// Represents a service that provides localized HTML content.
+    /// Represents a service that provides localized HTML content. This service just encodes the arguments but not the 
+    /// resource string.
     /// </summary>
     public interface IHtmlLocalizer : IStringLocalizer
     {

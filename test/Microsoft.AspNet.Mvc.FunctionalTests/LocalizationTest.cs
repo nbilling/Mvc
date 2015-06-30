@@ -83,26 +83,20 @@ mypartial
                 // https://github.com/aspnet/Mvc/issues/2747
 #if DNX451
                 var expected1 =
-@"My ASP.NET Application
-
-Hello there!!
+@"Hello there!!
 Learn More
 Hi John      ! You are in 2015 year and today is Thursday";
 
                 yield return new[] {"en-GB", expected1 };
 
                 var expected2 =
-@"Mon application ASP.NET
-
-Bonjour!
+@"Bonjour!
 apprendre Encore Plus
 Salut John      ! Vous êtes en 2015 an aujourd'hui est Thursday";
                 yield return new[] { "fr", expected2 };
 #else
                 var expectedCoreClr =
-@"My ASP.NET Application
-
-Hello there!!
+@"Hello there!!
 Learn More
 Hi";
                 yield return new[] {"en-GB", expectedCoreClr };

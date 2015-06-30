@@ -11,19 +11,35 @@ namespace Microsoft.AspNet.Mvc.Localization
             = new ResourceManager("Microsoft.AspNet.Mvc.Localization.Resources", typeof(Resources).GetTypeInfo().Assembly);
 
         /// <summary>
-        /// The resource string is format is invalid.
+        /// Must call CreateStringLocalizer method before using this property.
         /// </summary>
-        internal static string InvalidResourceString
+        internal static string NullStringLocalizer
         {
-            get { return GetString("InvalidResourceString"); }
+            get { return GetString("NullStringLocalizer"); }
         }
 
         /// <summary>
-        /// The resource string is format is invalid.
+        /// Must call CreateStringLocalizer method before using this property.
         /// </summary>
-        internal static string FormatInvalidResourceString()
+        internal static string FormatNullStringLocalizer()
         {
-            return GetString("InvalidResourceString");
+            return GetString("NullStringLocalizer");
+        }
+
+        /// <summary>
+        /// IStringLocalizerFactory is null. Must call other constructor overload to use this property.
+        /// </summary>
+        internal static string NullStringLocalizerFactory
+        {
+            get { return GetString("NullStringLocalizerFactory"); }
+        }
+
+        /// <summary>
+        /// IStringLocalizerFactory is null. Must call other constructor overload to use this property.
+        /// </summary>
+        internal static string FormatNullStringLocalizerFactory()
+        {
+            return GetString("NullStringLocalizerFactory");
         }
 
         private static string GetString(string name, params string[] formatterNames)

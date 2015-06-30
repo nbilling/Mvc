@@ -3,23 +3,25 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
-using System.Reflection;
 using System.Text;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Framework.Internal;
 using Microsoft.Framework.Localization;
 using Microsoft.Framework.WebEncoders;
 
+
 namespace Microsoft.AspNet.Mvc.Localization
 {
     /// <summary>
     /// An <see cref="IHtmlLocalizer"/> that uses the <see cref="IStringLocalizer"/> to provide localized HTML content.
+    /// This service just encodes the arguments but not the resource string.
     /// </summary>
     public class HtmlLocalizer : IHtmlLocalizer
     {
         private IStringLocalizer _localizer;
-        private readonly IStringLocalizerFactory _localizerFactory;
+        private IStringLocalizerFactory _localizerFactory;
         private readonly IHtmlEncoder _encoder;
 
         /// <summary>
@@ -42,6 +44,42 @@ namespace Microsoft.AspNet.Mvc.Localization
         {
             _localizer = localizer;
             _encoder = encoder;
+        }
+
+        private IStringLocalizer Localizer
+        {
+            get
+            {
+                if (_localizer == null)
+                {
+                    throw new InvalidOperationException(Resources.NullStringLocalizer);
+                }
+
+                return _localizer;
+            }
+            [param: NotNull]
+            set
+            {
+                _localizer = value;
+            }
+        }
+
+        private IStringLocalizerFactory LocalizerFactory
+        {
+            get
+            {
+                if (_localizerFactory == null)
+                {
+                    throw new InvalidOperationException(Resources.NullStringLocalizerFactory);
+                }
+
+                return _localizerFactory;
+            }
+            [param: NotNull]
+            set
+            {
+                _localizerFactory = value;
+            }
         }
 
         /// <inheritdoc />
@@ -121,295 +159,88 @@ namespace Microsoft.AspNet.Mvc.Localization
         {
             var position = 0;
             var length = resourceString.Length;
-            var ch = '\x0';
-            StringBuilder builder = null;
-            var resourceStringBuilder = new StringBuilder();
+            var currentCharacter = '\x0';
+            StringBuilder tokenBuffer = null;
+            var outputBuffer = new StringBuilder();
+            var isToken = false;
 
-            while (true)
+            while (position < length)
             {
-                builder = new StringBuilder();
+                currentCharacter = resourceString[position];
 
-                var isToken = false;
-                var p = position;
-                var i = position;
-
-                while (position < length)
+                position++;
+                if (currentCharacter == '}')
                 {
-                    ch = resourceString[position];
+                    tokenBuffer.Append(currentCharacter);
 
-                    position++;
-                    if (ch == '}')
+                    // Treat as escape character for }}
+                    while (position < length && resourceString[position] == '}') 
                     {
-                        if (position < length && resourceString[position] == '}') // Treat as escape character for }}
-                        {
-                            position++;
-                            if (position < length && resourceString[position] != '{')
-                            {
-                                isToken = false;
-                                builder.Append(ch);
-                                resourceStringBuilder.Append(EncodeArgument(builder.ToString()));
-                                builder = new StringBuilder();
-                            }
-                        }
-                        else
-                        {
-                            FormatError();
-                        }
+                        currentCharacter = resourceString[position];
+                        tokenBuffer.Append(currentCharacter);
+                        position++;
                     }
 
-                    if (ch == '{')
+                    if (tokenBuffer != null && tokenBuffer.Length > 0)
                     {
-                        if (builder == null)
-                        {
-                            builder = new StringBuilder();
-                        }
-                        if (position < length && resourceString[position] == '{') // Treat as escape character for {{
-                        {
-                            isToken = true;
-                            position++;
-                        }
-                        else
-                        {
-                            position--;
-                            break;
-                        }
+                        var formattedString = string.Format(tokenBuffer.ToString(), arguments);
+                        outputBuffer.Append(EncodeArgument(formattedString));
                     }
 
-                    if (isToken)
+                    if (position == length)
                     {
-                        builder.Append(ch);
+                        break;
                     }
                     else
                     {
-                        resourceStringBuilder.Append(ch);
+                        currentCharacter = resourceString[position];
+                        position++;
+                        isToken = false;
                     }
                 }
 
-                if (position == length)
+                if (currentCharacter == '{')
                 {
-                    if (builder.Length > 0)
+                    tokenBuffer = new StringBuilder();
+                    tokenBuffer.Append(currentCharacter);
+                    isToken = true;
+
+                    // Treat as escape character for {{
+                    while (position < length && resourceString[position] == '{')
                     {
-                        resourceStringBuilder.Append(EncodeArgument(builder.ToString()));
-                    }
-                    break;
-                }
-                position++;
-                if (position == length || (ch = resourceString[position]) < '0' || ch > '9')
-                {
-                    FormatError();
-                }
+                        currentCharacter = resourceString[position];
 
-                var index = 0;
-                do
-                {
-                    index = index * 10 + ch - '0';
-                    position++;
-                    if (position == length)
-                    {
-                        FormatError();
-                    }
-
-                    ch = resourceString[position];
-                } while (ch >= '0' && ch <= '9' && index < 1000000);
-
-                if (index >= arguments.Length)
-                {
-                    FormatError();
-                }
-
-                while (position < length && (ch = resourceString[position]) == ' ')
-                {
-                    position++;
-                }
-
-                var leftJustify = false;
-                var width = 0;
-
-                if (ch == ',')
-                {
-                    position++;
-                    while (position < length && resourceString[position] == ' ')
-                    {
+                        tokenBuffer.Append(currentCharacter);
                         position++;
                     }
 
-                    if (position == length)
-                    {
-                        FormatError();
-                    }
-                    ch = resourceString[position];
-                    if (ch == '-')
-                    {
-                        leftJustify = true;
-                        position++;
-                        if (position == length)
-                        {
-                            FormatError();
-                        }
-                        ch = resourceString[position];
-                    }
-                    if (ch < '0' || ch > '9')
-                    {
-                        FormatError();
-                    }
-                    do
-                    {
-                        width = width * 10 + ch - '0';
-                        position++;
-                        if (position == length)
-                        {
-                            FormatError();
-                        }
-
-                        ch = resourceString[position];
-                    } while (ch >= '0' && ch <= '9' && width < 1000000);
+                    //Remove the last added { since it is getting added in saveData condition below.
+                    tokenBuffer.Length -= 1;
                 }
 
-                while (position < length && (ch = resourceString[position]) == ' ')
+                if (isToken)
                 {
-                    position++;
+                    tokenBuffer.Append(currentCharacter);
                 }
-
-                var arg = arguments[index];
-                StringBuilder fmt = null;
-
-                if (ch == ':')
+                else
                 {
-                    position++;
-                    p = position;
-                    i = position;
-                    while (true)
-                    {
-                        if (position == length)
-                        {
-                            FormatError();
-                        }
-                        ch = resourceString[position];
-                        position++;
-
-                        if (ch == '{')
-                        {
-                            // Treat as escape character for {{
-                            if (position < length && resourceString[position] == '{')
-                            {
-                                position++;
-                            }
-                            else
-                            {
-                                FormatError();
-                            }
-                        }
-                        else if (ch == '}')
-                        {
-                            // Treat as escape character for }}
-                            if (position < length && resourceString[position] == '}')
-                            {
-                                position++;
-                            }
-                            else
-                            {
-                                position--;
-                                break;
-                            }
-                        }
-
-                        if (fmt == null)
-                        {
-                            fmt = new StringBuilder();
-                        }
-                        fmt.Append(ch);
-                    }
+                    outputBuffer.Append(currentCharacter);
                 }
-                if (ch != '}')
-                {
-                    FormatError();
-                }
-
-                string sFmt = null;
-                string s = null;
-
-                if (s == null)
-                {
-                    var formattableArg = arg as IFormattable;
-
-                    if (formattableArg != null)
-                    {
-                        if (sFmt == null && fmt != null)
-                        {
-                            sFmt = fmt.ToString();
-                        }
-
-                        s = formattableArg.ToString(sFmt, null);
-                    }
-                    else if (arg != null)
-                    {
-                        s = arg.ToString();
-                    }
-                }
-
-                if (s == null)
-                {
-                    s = string.Empty;
-                }
-                int pad = width - s.Length;
-                if (!leftJustify && pad > 0)
-                {
-                    builder.Append(' ', pad);
-                }
-
-                builder.Append(s);
-
-                if (leftJustify && pad > 0)
-                {
-                    builder.Append(' ', pad);
-                }
-
-                while (true)
-                {
-                    if (position == length)
-                    {
-                        FormatError();
-                    }
-                    ch = resourceString[position];
-                    position++;
-                    if (ch == '}')
-                    {
-                        if (position < length && resourceString[position] == '}')  // Treat as escape character for }}
-                        {
-                            builder.Append(ch);
-                            position++;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                resourceStringBuilder.Append(EncodeArgument(builder.ToString()));
             }
 
-            return resourceStringBuilder.ToString();
+            return outputBuffer.ToString();
         }
 
         /// <summary>
-        /// Encodes the argument based on the object type.
+        /// Encodes the argument.
         /// </summary>
         /// <param name="argument">The object to encode.</param>
         /// <returns>The encoded object.</returns>
-        protected object EncodeArgument(object argument)
+        protected object EncodeArgument([NotNull] object argument)
         {
-            if (argument is HtmlString || argument == null)
-            {
-                return argument;
-            }
+            Debug.Assert(!(argument is HtmlString));
 
             return _encoder.HtmlEncode(argument.ToString());
-        }
-
-        private void FormatError()
-        {
-            throw new FormatException(Resources.InvalidResourceString);
         }
     }
 }

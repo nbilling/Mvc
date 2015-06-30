@@ -1,9 +1,1 @@
-﻿@using System.Globalization
-@using Microsoft.Framework.Localization
-@using Microsoft.AspNet.Mvc.Localization
-@inject IStringLocalizerFactory StringLocalizerFactory
-@{
-    var locLayoutString = StringLocalizerFactory.Create("LocalizationWebSite.Views.Shared._LocalizationLayout.cshtml", "");
-}
-@locLayoutString["My ASP.NET Application"]
-@RenderBody()
+﻿@RenderBody()

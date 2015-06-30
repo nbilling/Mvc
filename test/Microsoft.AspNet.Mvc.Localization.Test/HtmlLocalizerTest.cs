@@ -97,22 +97,47 @@ namespace Microsoft.AspNet.Mvc.Localization.Test
         {
             get
             {
-                yield return new object[] { "Bonjour {0}", new object[] { "test" }, "Bonjour HtmlEncode[[test]]" };
-                yield return new object[] { "Bonjour {{0}}", new object[] { "{0}" }, "Bonjour HtmlEncode[[{0}]]" };
-                yield return new object[] { "Bonjour {0:x}", new object[] { 10 }, "Bonjour HtmlEncode[[a]]" };
-                yield return new object[] { "Bonjour {{0:x}}", new object[] { 10 }, "Bonjour HtmlEncode[[{0:x}]]" };
-                yield return new object[] { "Bonjour {{{0:x}}}", new object[] { 10 }, "Bonjour HtmlEncode[[{x}]]" };
-                yield return new object[] {
+                yield return new object[]
+                {
+                    "Bonjour {0}", new object[] { "test" }, "Bonjour HtmlEncode[[test]]"
+                };
+
+                yield return new object[]
+                {
+                    "Bonjour {{0}}", new object[] { "{0}" }, "Bonjour HtmlEncode[[{0}]]"
+                };
+
+                yield return new object[]
+                {
+                    "Bonjour {0:x}", new object[] { 10 }, "Bonjour HtmlEncode[[a]]"
+                };
+
+                yield return new object[]
+                {
+                    "Bonjour {{0:x}}", new object[] { 10 }, "Bonjour HtmlEncode[[{0:x}]]"
+                };
+
+                yield return new object[]
+                {
+                    "Bonjour {{{0:x}}}", new object[] { 10 }, "Bonjour HtmlEncode[[{x}]]"
+                };
+
+                yield return new object[]
+                {
                     "Bonjour {{{0:x}}} {1:yyyy}",
                     new object[] { 10, new DateTime(2015, 10, 10) },
                     "Bonjour HtmlEncode[[{x}]] HtmlEncode[[2015]]"
                 };
-                yield return new object[] {
+
+                yield return new object[]
+                {
                     "Bonjour {{{0:x}}} Bienvenue {{1:yyyy}}",
                     new object[] { 10, new DateTime(2015, 10, 10) },
                     "Bonjour HtmlEncode[[{x}]] Bienvenue HtmlEncode[[{1:yyyy}]]"
                 };
-                yield return new object[] {
+
+                yield return new object[]
+                {
                     "Bonjour {0,6} Bienvenue {{1:yyyy}}",
                     new object[] { 10, new DateTime(2015, 10, 10) },
                     "Bonjour HtmlEncode[[    10]] Bienvenue HtmlEncode[[{1:yyyy}]]"
