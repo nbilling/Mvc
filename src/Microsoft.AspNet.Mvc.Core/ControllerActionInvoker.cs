@@ -76,6 +76,8 @@ namespace Microsoft.AspNet.Mvc.Core
 
         protected override async Task<IActionResult> InvokeActionAsync(ActionExecutingContext actionExecutingContext)
         {
+            Internal.AspNetMvcEventSource.Log.RequestProcessed(actionExecutingContext, _descriptor.MethodInfo);
+
             var actionMethodInfo = _descriptor.MethodInfo;
             var actionReturnValue = await ControllerActionExecutor.ExecuteAsync(
                 actionMethodInfo,
